@@ -3,7 +3,6 @@ package admin
 import (
 	"ecom/database"
 	"ecom/helper"
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -37,15 +36,6 @@ func AddProduct(c *gin.Context) {
 	c.ShouldBindJSON(&find)
 
 	helper.DB.Where("name=?", find.Categ).First(&cate)
-	fmt.Println(cate)
-	fmt.Println(
-		find.ProductName,
-		"---", find.Categ,
-		find.Quantity,
-		find.Size,
-		find.ProductPrize,
-		find.Description,
-	)
 
 	prod := database.Product{
 		ProductName:  find.ProductName,
@@ -65,7 +55,26 @@ func AddProduct(c *gin.Context) {
 }
 
 func EditProdect(c *gin.Context) {
+	var bind prodectbind
+	var category database.Category
 
+	c.ShouldBind(&bind)
+	id := c.Param("ID")
+	helper.DB.Where("name=?", bind.Categ).First(&category)
+	edited := database.Product{
+		ProductName:  bind.ProductName,
+		CategoryId:   category.ID,
+		Quantity:     bind.Quantity,
+		Size:         bind.Size,
+		ProductPrize: bind.ProductPrize,
+		Description:  bind.Description,
+	}
+	if edited.CategoryId == 0 {
+		c.JSON(200, "Category not found Please give a valid Category.")
+		return
+	}
+	helper.DB.Model(&database.Product{}).Where("id=?", id).Updates(edited)
+	c.JSON(200, "Successfully Edited.")
 }
 
 func Delete(c *gin.Context) {
@@ -75,8 +84,8 @@ func Delete(c *gin.Context) {
 
 	helper.DB.Where("id=?", id).First(&delete)
 	if err := helper.DB.Where("id=?", id).Delete(&delete); err.Error != nil {
-		c.JSON(http.StatusSeeOther, "Can't Delete this user.")
+		c.JSON(http.StatusSeeOther, "You Can't Delete this Product.")
 	}
-	c.JSON(http.StatusSeeOther, "Successfylly Delete User.")
+	c.JSON(http.StatusSeeOther, "Successfylly Deleted.")
 
 }

@@ -11,7 +11,7 @@ type Admin struct {
 
 type Product struct {
 	gorm.Model
-	ProductName  string `gorm:"not null" json:"prduct"`
+	ProductName  string `gorm:"not null;unique" json:"prduct"`
 	CategoryId   uint   `gorm:"not null"`
 	ProductPrize int    `gorm:"not null" json:"prize"`
 	Quantity     int    `gorm:"not null" json:"quantity"`

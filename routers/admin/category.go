@@ -71,9 +71,23 @@ func BlockCategory(c *gin.Context) {
 
 func DeleteCategory(c *gin.Context) {
 	var find database.Category
+	var prod database.Product
 
 	id := c.Param("ID")
 
+	helper.DB.Where("CategoryId=?", id).First(&prod)
+	if prod.ID == 0 {
+		c.JSON(422, "You can't Delete this Category.Some Product Listed this Category.")
+		return
+	}
+
 	helper.DB.Where("id=?", id).Delete(&find)
 	c.JSON(200, "Category deleted Successfully.")
+}
+
+func DeleteRecovery(c *gin.Context) {
+	id := c.Param("ID")
+
+	helper.DB.Unscoped().Model(&database.Category{}).Where("id=?", id).Update("deleted_at", nil)
+	c.JSON(200,"Recoverd.")
 }

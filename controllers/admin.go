@@ -25,4 +25,7 @@ func AdminRouters(r *gin.RouterGroup) {
 	r.PATCH("/blockcategory/:ID",admin.BlockCategory)
 	r.DELETE("/deletecategory/:ID",admin.DeleteCategory)
 
+
+	r.PATCH("/recover/:ID",admin.DeleteRecovery)
+
 }
