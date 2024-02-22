@@ -4,6 +4,7 @@ import (
 	"ecom/database"
 	"ecom/helper"
 	"net/http"
+	"path/filepath"
 
 	"github.com/gin-gonic/gin"
 )
@@ -12,6 +13,8 @@ type prodectbind struct {
 	database.Product
 	Categ string `json:"catagory"`
 }
+
+var prod database.Product
 
 func Product(c *gin.Context) {
 	var product []database.Product
@@ -37,7 +40,7 @@ func AddProduct(c *gin.Context) {
 
 	helper.DB.Where("name=?", find.Categ).First(&cate)
 
-	prod := database.Product{
+	prod = database.Product{
 		ProductName:  find.ProductName,
 		CategoryId:   cate.ID,
 		Quantity:     find.Quantity,
@@ -49,8 +52,8 @@ func AddProduct(c *gin.Context) {
 		c.JSON(200, "Category not found Please give a valid Category.")
 		return
 	}
-	helper.DB.Create(&prod)
-	c.JSON(200, "Product added Successfully.")
+
+	c.JSON(200, "Product added Successfully. Image Upload")
 
 }
 
@@ -88,4 +91,32 @@ func Delete(c *gin.Context) {
 	}
 	c.JSON(http.StatusSeeOther, "Successfylly Deleted.")
 
+}
+
+func ImageAdding(c *gin.Context) {
+
+	form, err := c.MultipartForm()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	file := form.File["image"]
+
+	if len(file) < 3 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Minimum 3 images required"})
+		return
+	}
+
+	for _, f := range file {
+		dst := filepath.Join("./assets", f.Filename)
+		err := c.SaveUploadedFile(f, dst)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		prod.ImageUrl = append(prod.ImageUrl, dst)
+	}
+	helper.DB.Create(&prod)
+	c.JSON(http.StatusOK, gin.H{"message": "File uploaded successfully"})
 }

@@ -28,4 +28,6 @@ func AdminRouters(r *gin.RouterGroup) {
 
 	r.PATCH("/recover/:ID",admin.DeleteRecovery)
 
+	r.POST("/imageadding",admin.ImageAdding)
+
 }

@@ -18,6 +18,7 @@ type Product struct {
 	Size         int    `gorm:"not null" json:"size"`
 	Description  string `gorm:"not null" json:"description"`
 	Status       string `gorm:"default:Active"`
+	ImageUrl     []string
 	Category     Category
 }
 
