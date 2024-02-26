@@ -12,23 +12,23 @@ func AdminRouters(r *gin.RouterGroup) {
 	r.GET("/home", admin.HomePage)
 //product
 	r.GET("/product", admin.Product)
-	r.POST("/addproduct", admin.AddProduct)
-	r.PATCH("/edit/:ID", admin.EditProdect)
-	r.PATCH("/imagedit/:ID",admin.ImageEditing)
-	r.DELETE("/delete/:ID", admin.Delete)
+	r.POST("/product", admin.AddProduct)
+	r.PATCH("/product/:ID", admin.EditProdect)
+	//r.PATCH("/imagedit/:ID",admin.ImageEditing)
+	r.DELETE("/product/:ID", admin.Delete)
 	//users
 	r.GET("/users",admin.UsersList)
-	r.PATCH("/userblock/:ID",admin.UserStatus)
+	r.PATCH("/users/:ID",admin.UserStatus)
 //category
 	r.GET("/category",admin.Category)
-	r.POST("/addcategory",admin.AddCategory)
-	r.PUT("/editcategory/:ID",admin.EditCategory)
-	r.PATCH("/blockcategory/:ID",admin.BlockCategory)
-	r.DELETE("/deletecategory/:ID",admin.DeleteCategory)
+	r.POST("/category",admin.AddCategory)
+	r.PUT("/category/:ID",admin.EditCategory)
+	r.PATCH("/category/:ID",admin.BlockCategory)
+	r.DELETE("/category/:ID",admin.DeleteCategory)
 
 //helper
 	r.PATCH("/recover/:ID",admin.DeleteRecovery)
 //image adding
-	r.POST("/imageadding",admin.ImageAdding)
+	//r.POST("/imageadding",admin.ImageAdding)
 
 }

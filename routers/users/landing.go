@@ -44,15 +44,13 @@ func ProductDetail(c *gin.Context) {
 		"Size":        find.Size,
 		"Description": find.Description,
 		"Category":    find.Category.Name,
-		"Image_1":     find.ImageUrl1,
-		"Image_2":     find.ImageUrl2,
-		"Image_3":     find.ImageUrl3,
+		"Images":     find.ImageUrls,
 	})
 c.JSON(200,"Recommend Products")
 	for i := 0; i < len(table); i++ {
 		if find.ID != table[i].ID {
 			c.JSON(200, gin.H{
-				"Image": table[i].ImageUrl1,
+				"Image": table[i].ImageUrls,
 				"Name":  table[i].ProductName,
 				"Prize": table[i].ProductPrize,
 			})
