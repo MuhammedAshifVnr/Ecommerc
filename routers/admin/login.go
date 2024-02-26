@@ -12,7 +12,7 @@ import (
 var AdminTable database.Admin
 
 
-// login post
+// ..................................login post......................
 
 func AdminLogin(c *gin.Context) {
 	var find database.Admin
@@ -31,7 +31,7 @@ func AdminLogin(c *gin.Context) {
 	}
 }
 
-//after login show this page list of users
+//..............after login show this page list of users.........................
 
 func HomePage(c *gin.Context) {
 

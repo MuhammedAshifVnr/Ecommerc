@@ -15,7 +15,9 @@ type prodectbind struct {
 }
 
 var prod database.Product
+var edited database.Product
 
+// ..................................product showing................................
 func Product(c *gin.Context) {
 	var product []database.Product
 	helper.DB.Order("ID").Find(&product)
@@ -32,6 +34,7 @@ func Product(c *gin.Context) {
 
 }
 
+// .............................admin can add products......................
 func AddProduct(c *gin.Context) {
 	var find prodectbind
 	var cate database.Category
@@ -52,11 +55,48 @@ func AddProduct(c *gin.Context) {
 		c.JSON(200, "Category not found Please give a valid Category.")
 		return
 	}
-
-	c.JSON(200, "Product added Successfully. Image Upload")
+	//helper.DB.Create(&prod)
+	c.JSON(200, "Please Upload the Product Images.")
 
 }
 
+// .....................................product image adding...............................................
+func ImageAdding(c *gin.Context) {
+
+	form, err := c.MultipartForm()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error1": err.Error()})
+		return
+	}
+
+	file := form.File["image"]
+
+	if len(file) < 3 {
+		c.JSON(http.StatusBadRequest, gin.H{"error2": "Minimum 3 images required"})
+		return
+	}
+
+	for i := 0; i < len(file); i++ {
+
+		dst := filepath.Join("./assets", file[i].Filename)
+		err := c.SaveUploadedFile(file[i], dst)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error3": err.Error()})
+			return
+		}
+		if i == 0 {
+			prod.ImageUrl1 = dst
+		} else if i == 1 {
+			prod.ImageUrl2 = dst
+		} else {
+			prod.ImageUrl3 = dst
+		}
+	}
+	helper.DB.Create(&prod)
+	c.JSON(http.StatusOK, gin.H{"message": "File uploaded successfully"})
+}
+
+// ......................................admin can edit the product..............................
 func EditProdect(c *gin.Context) {
 	var bind prodectbind
 	var category database.Category
@@ -64,7 +104,7 @@ func EditProdect(c *gin.Context) {
 	c.ShouldBind(&bind)
 	id := c.Param("ID")
 	helper.DB.Where("name=?", bind.Categ).First(&category)
-	edited := database.Product{
+	edited = database.Product{
 		ProductName:  bind.ProductName,
 		CategoryId:   category.ID,
 		Quantity:     bind.Quantity,
@@ -77,9 +117,48 @@ func EditProdect(c *gin.Context) {
 		return
 	}
 	helper.DB.Model(&database.Product{}).Where("id=?", id).Updates(edited)
+	c.JSON(200, "Redirecting to Image edit.")
+}
+
+// ......................product image editing................................
+func ImageEditing(c *gin.Context) {
+	edited=database.Product{}
+	id := c.Param("ID")
+	form, err := c.MultipartForm()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error1": err.Error()})
+		return
+	}
+
+	file := form.File["image"]
+
+	if len(file) < 3 {
+		c.JSON(http.StatusBadRequest, gin.H{"error2": "Minimum 3 images required"})
+		return
+	}
+
+	for i := 0; i < len(file); i++ {
+
+		dst := filepath.Join("./assets", file[i].Filename)
+		err := c.SaveUploadedFile(file[i], dst)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error3": err.Error()})
+			return
+		}
+		if i == 0 {
+			prod.ImageUrl1 = dst
+		} else if i == 1 {
+			prod.ImageUrl2 = dst
+		} else {
+			prod.ImageUrl3 = dst
+		}
+	}
+	helper.DB.Model(&database.Product{}).Where("id=?", id).Updates(edited)
+	c.JSON(http.StatusOK, gin.H{"message": "File uploaded successfully"})
 	c.JSON(200, "Successfully Edited.")
 }
 
+// .................................admin can delete product............................
 func Delete(c *gin.Context) {
 	var delete database.Product
 
@@ -91,32 +170,4 @@ func Delete(c *gin.Context) {
 	}
 	c.JSON(http.StatusSeeOther, "Successfylly Deleted.")
 
-}
-
-func ImageAdding(c *gin.Context) {
-
-	form, err := c.MultipartForm()
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	file := form.File["image"]
-
-	if len(file) < 3 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Minimum 3 images required"})
-		return
-	}
-
-	for _, f := range file {
-		dst := filepath.Join("./assets", f.Filename)
-		err := c.SaveUploadedFile(f, dst)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-		prod.ImageUrl = append(prod.ImageUrl, dst)
-	}
-	helper.DB.Create(&prod)
-	c.JSON(http.StatusOK, gin.H{"message": "File uploaded successfully"})
 }
