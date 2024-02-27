@@ -10,16 +10,18 @@ func AdminRouters(r *gin.RouterGroup) {
 //login
 	r.POST("/login", admin.AdminLogin)
 	r.GET("/home", admin.HomePage)
+
 //product
 	r.GET("/product", admin.Product)
 	r.POST("/product", admin.AddProduct)
-	r.PATCH("/product/:ID", admin.EditProdect)
-	//r.PATCH("/imagedit/:ID",admin.ImageEditing)
+	r.PUT("/product/:ID", admin.EditProdect)
 	r.DELETE("/product/:ID", admin.Delete)
+	
 	//users
 	r.GET("/users",admin.UsersList)
 	r.PATCH("/users/:ID",admin.UserStatus)
-//category
+
+	//category
 	r.GET("/category",admin.Category)
 	r.POST("/category",admin.AddCategory)
 	r.PUT("/category/:ID",admin.EditCategory)
