@@ -9,7 +9,6 @@ import (
 	"github.com/go-gomail/gomail"
 )
 
-var USerOtp map[string]string
 
 func GenerateOtp() string {
 	rand.Seed(time.Now().UnixNano())

@@ -31,3 +31,11 @@ type Category struct {
 	Description string `gorm:"not null" json:"description"`
 	Status      string `gorm:"default:Active"`
 }
+
+type Ratings struct {
+	gorm.Model
+	Users     int `json:"user"`
+	ProductId uint `gorm:"unique;not null" json:"product"`
+	Product   Product
+	Rating    float32`json:"rating"`
+}

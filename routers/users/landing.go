@@ -3,6 +3,7 @@ package users
 import (
 	"ecom/database"
 	"ecom/helper"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -25,6 +26,7 @@ func ProductDetail(c *gin.Context) {
 	var find database.Product
 	var stock string
 	var table []database.Product
+	var rating database.Ratings
 
 	id := c.Param("ID")
 
@@ -44,9 +46,13 @@ func ProductDetail(c *gin.Context) {
 		"Size":        find.Size,
 		"Description": find.Description,
 		"Category":    find.Category.Name,
-		"Images":     find.ImageUrls,
+		"Images":      find.ImageUrls,
 	})
-c.JSON(200,"Recommend Products")
+	helper.DB.Where("product_id=?", id).First(&rating)
+	result := rating.Rating / float32(rating.Users)
+	fmt.Println(result)
+	c.JSON(200, result)
+	c.JSON(200, "Recommend Products")
 	for i := 0; i < len(table); i++ {
 		if find.ID != table[i].ID {
 			c.JSON(200, gin.H{

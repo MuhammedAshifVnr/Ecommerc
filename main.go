@@ -8,7 +8,6 @@ import (
 )
 
 func init() {
-	helper.USerOtp = make(map[string]string)
 	helper.EnvLoader()
 	helper.DbConnect()
 }
