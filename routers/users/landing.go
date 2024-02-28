@@ -18,6 +18,7 @@ func Homepage(c *gin.Context) {
 			"Name":     v.ProductName,
 			"Prize":    v.ProductPrize,
 			"Category": v.Category.Name,
+			"ID":v.ID,
 		})
 	}
 }
