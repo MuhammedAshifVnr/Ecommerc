@@ -28,6 +28,11 @@ func AdminRouters(r *gin.RouterGroup) {
 	r.PATCH("/category/:ID",admin.BlockCategory)
 	r.DELETE("/category/:ID",admin.DeleteCategory)
 
+	//coupons
+	r.GET("/coupon",admin.Coupons)
+	r.POST("/coupon",admin.AddCoupons)
+
+
 	//rating
 	r.POST("/rating",admin.RatingAdding)
 //helper

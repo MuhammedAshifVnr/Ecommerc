@@ -14,7 +14,6 @@ type User struct {
 	Status   string `gorm:"default:Active"`
 	Mobile   int    `json:"mobile"`
 	Gender   string `json:"gender"`
-	Address  Address
 }
 
 type Otp struct {
@@ -26,6 +25,7 @@ type Otp struct {
 type Address struct {
 	ID      uint `gorm:"primarykey"`
 	UserId  uint
+	User    User
 	Type    string `jsonz:"type"`
 	Street  string `json:"street"`
 	City    string `json:"city"`
@@ -39,5 +39,25 @@ type Cart struct {
 	ProductID uint
 	Product   Product
 	Quantity  uint
-	SubTotal  uint
+}
+
+type Coupon struct {
+	gorm.Model
+	Code   string `gorm:"unique"`
+	Amount float64
+}
+
+type Order struct {
+	gorm.Model
+	UserID        uint `gorm:"not null"`
+	User          User
+	Product       string
+	PaymentMethod string `gorm:"not null"`
+	AddressID     uint   `gorm:"not null"`
+	Address       Address
+	CouponID      uint
+	Coupon        Coupon
+	Amount        float64
+	Status        string `gorm:"not null;default:'shipped'"`
+	Reason        string
 }
