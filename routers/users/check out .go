@@ -3,7 +3,6 @@ package users
 import (
 	"ecom/database"
 	"ecom/helper"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -36,7 +35,7 @@ func CheckOut(c *gin.Context) {
 	}
 	var totalAmount float64
 	for _, cartItem := range cartItems {
-		Amount := (cartItem.Product.ProductPrize * float64(cartItem.Quantity))
+		Amount := (cartItem.Product.ProductPrice * float64(cartItem.Quantity))
 
 		if cartItem.Quantity > uint(cartItem.Product.Quantity) {
 			c.JSON(http.StatusBadRequest, gin.H{
@@ -52,12 +51,13 @@ func CheckOut(c *gin.Context) {
 			})
 			return
 		}
-		item := fmt.Sprintf("%s (Qty:%d)", cartItem.Product.ProductName, cartItem.Quantity)
+
 		order := database.Order{
 			UserID:        Find.ID,
 			PaymentMethod: paymentMethod,
 			AddressID:     uint(Address),
-			Product:       item,
+			ProductID:     cartItem.Product.ID,
+			Quantity:      cartItem.Quantity,
 		}
 		if couponCode != "" {
 			Amount -= coupon.Amount
@@ -67,7 +67,7 @@ func CheckOut(c *gin.Context) {
 		}
 		order.Amount = Amount
 		helper.DB.Create(&order)
-		totalAmount+=Amount
+		totalAmount += Amount
 	}
 
 	if err := helper.DB.Where("user_id =?", Find.ID).Delete(&database.Cart{}); err.Error != nil {
@@ -77,17 +77,45 @@ func CheckOut(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Order Placed Successfully.",
-		"Amount":totalAmount,
+		"Amount":  totalAmount,
 	})
 
 }
 
-func CancelOrder(c *gin.Context)  {
-	id:=c.Param("ID")
+func Order(c *gin.Context) {
+	var orders []database.Order
+	helper.DB.Where("user_id=?", Find.ID).Find(&orders)
+	for _, order := range orders {
+		c.JSON(200, gin.H{
+			"ID":      order.ID,
+			"Product": order.Product,
+			"Amount":  order.Amount,
+			"Status":  order.Status,
+		})
+	}
+}
+
+func OrderDetils(c *gin.Context) {
 	var order database.Order
-	helper.DB.Where("id=?",id).First(&order)
-	order.Status="cancelled"
-	order.Reason=c.Request.FormValue("reason")
+	id := c.Param("ID")
+	helper.DB.Preload("Coupon").Where("id=?", id).First(&order)
+	c.JSON(200, gin.H{
+		"Product":         order.Product,
+		"Amount":          order.Amount,
+		"Coupon":          order.Coupon.Code,
+		"Status":          order.Status,
+		"Payment Method":  order.PaymentMethod,
+		"Order Confirmed": order.Model.CreatedAt,
+		"Status Updated":  order.Model.UpdatedAt,
+	})
+}
+
+func CancelOrder(c *gin.Context) {
+	id := c.Param("ID")
+	var order database.Order
+	helper.DB.Where("id=?", id).First(&order)
+	order.Status = "cancelled"
+	order.Reason = c.Request.FormValue("reason")
 	helper.DB.Save(&order)
-	c.JSON(200,"Order Cancelled.")
+	c.JSON(200, "Order Cancelled.")
 }

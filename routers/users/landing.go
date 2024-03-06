@@ -3,7 +3,6 @@ package users
 import (
 	"ecom/database"
 	"ecom/helper"
-	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -14,11 +13,15 @@ func Homepage(c *gin.Context) {
 	helper.DB.Preload("Category").Find(&find)
 
 	for _, v := range find {
+		var rating []database.Review
+		helper.DB.Where("product_id=?", v.ID).Find(&rating)
+		avg := AvgRating(rating)
 		c.JSON(200, gin.H{
 			"Name":     v.ProductName,
-			"Prize":    v.ProductPrize,
+			"Prize":    v.ProductPrice,
 			"Category": v.Category.Name,
-			"ID":v.ID,
+			"Rating":   avg,
+			"ID":       v.ID,
 		})
 	}
 }
@@ -27,7 +30,7 @@ func ProductDetail(c *gin.Context) {
 	var find database.Product
 	var stock string
 	var table []database.Product
-	var rating database.Ratings
+	var review database.Review
 
 	id := c.Param("ID")
 
@@ -42,25 +45,33 @@ func ProductDetail(c *gin.Context) {
 	helper.DB.Where("category_id=?", find.CategoryId).Find(&table)
 	c.JSON(200, gin.H{
 		"Name":        find.ProductName,
-		"Prize":       find.ProductPrize,
+		"Prize":       find.ProductPrice,
 		"Stock":       stock,
 		"Size":        find.Size,
 		"Description": find.Description,
 		"Category":    find.Category.Name,
 		"Images":      find.ImageUrls,
 	})
-	helper.DB.Where("product_id=?", id).First(&rating)
-	result := rating.Rating / float32(rating.Users)
-	fmt.Println(result)
-	c.JSON(200, result)
+	helper.DB.Where("product_id=?", id).First(&review)
 	c.JSON(200, "Recommend Products")
 	for i := 0; i < len(table); i++ {
 		if find.ID != table[i].ID {
 			c.JSON(200, gin.H{
 				"Image": table[i].ImageUrls,
 				"Name":  table[i].ProductName,
-				"Prize": table[i].ProductPrize,
+				"Prize": table[i].ProductPrice,
 			})
 		}
 	}
+}
+
+func AvgRating(ratings []database.Review) float64 {
+	avg := 0.0
+	if len(ratings) == 0 {
+		return avg
+	}
+	for _, v := range ratings {
+		avg += v.Rating
+	}
+	return avg/float64(len(ratings))
 }

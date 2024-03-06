@@ -16,7 +16,7 @@ type Product struct {
 	gorm.Model
 	ProductName  string         `gorm:"not null;unique" json:"prduct"`
 	CategoryId   uint           `gorm:"not null"`
-	ProductPrize float64        `gorm:"not null" json:"prize"`
+	ProductPrice float64        `gorm:"not null" json:"prize"`
 	Quantity     int            `gorm:"not null" json:"quantity"`
 	Size         int            `gorm:"not null" json:"size"`
 	Description  string         `gorm:"not null" json:"description"`
@@ -32,10 +32,12 @@ type Category struct {
 	Status      string `gorm:"default:Active"`
 }
 
-type Ratings struct {
+type Review struct {
 	gorm.Model
-	Users     int `json:"user"`
-	ProductId uint `gorm:"unique;not null" json:"product"`
+	UserID    uint
+	User      User
+	ProductID uint
 	Product   Product
-	Rating    float32`json:"rating"`
+	Rating    float64
+	Comment   string
 }

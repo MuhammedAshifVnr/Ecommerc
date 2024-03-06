@@ -40,14 +40,14 @@ func Cart(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"ID":      v.ID,
 			"Product": v.Product.ProductName,
-			"Prize":   v.Product.ProductPrize,
+			"Prize":   v.Product.ProductPrice,
 			"Image":   v.Product.ImageUrls,
 			"Qty":     v.Quantity,
 		})
 	}
 	var total float64
 	for _, v := range cart {
-		total += float64(v.Product.ProductPrize) * float64(v.Quantity)
+		total += float64(v.Product.ProductPrice) * float64(v.Quantity)
 	}
 	c.JSON(200, gin.H{
 		"Total Amount": total,
@@ -80,18 +80,3 @@ func CartQuantity(c *gin.Context) {
 	c.JSON(200, "Quantity Updated.")
 }
 
-func Order(c *gin.Context) {
-	var orders []database.Order
-	helper.DB.Preload("Coupon").Where("user_id=?", Find.ID).Find(&orders)
-	for _, order := range orders {
-		c.JSON(200, gin.H{
-			"ID": order.ID,
-			"Product":order.Product,
-			"Amount":order.Amount,
-			"Coupon":order.Coupon.Code,
-			"Status":order.Status,
-			"Payment Method":order.PaymentMethod,
-
-		})
-	}
-}

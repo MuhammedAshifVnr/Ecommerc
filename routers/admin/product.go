@@ -22,7 +22,7 @@ func Product(c *gin.Context) {
 			"Product Name": v.ProductName,
 			"Category":     v.CategoryId,
 			"Quantity":     v.Quantity,
-			"Prize":        v.ProductPrize,
+			"Prize":        v.ProductPrice,
 			"Status":       v.Status,
 			"images":       v.ImageUrls,
 		})
@@ -36,7 +36,7 @@ func AddProduct(c *gin.Context) {
 	helper.DB.Where("name=?", c.Request.FormValue("category")).First(&cate)
 
 	quantit, _ := strconv.Atoi(c.Request.FormValue("quantity"))
-	prize, _ := strconv.ParseFloat(c.Request.FormValue("prize"), 64)
+	price, _ := strconv.ParseFloat(c.Request.FormValue("price"), 64)
 	size, _ := strconv.Atoi(c.Request.FormValue("size"))
 
 	if cate.ID == 0 {
@@ -60,7 +60,7 @@ func AddProduct(c *gin.Context) {
 	}
 	datas := database.Product{
 		ProductName:  c.Request.FormValue("product"),
-		ProductPrize: prize,
+		ProductPrice: price,
 		CategoryId:   cate.ID,
 		Quantity:     quantit,
 		Size:         size,
@@ -87,7 +87,7 @@ func EditProdect(c *gin.Context) {
 	helper.DB.Where("name=?", c.Request.FormValue("category")).First(&cate)
 
 	quantit, _ := strconv.Atoi(c.Request.FormValue("quantity"))
-	prize, _ := strconv.ParseFloat(c.Request.FormValue("prize"), 64)
+	price, _ := strconv.ParseFloat(c.Request.FormValue("price"), 64)
 	size, _ := strconv.Atoi(c.Request.FormValue("size"))
 
 	if cate.ID == 0 {
@@ -111,7 +111,7 @@ func EditProdect(c *gin.Context) {
 	}
 	datas = database.Product{
 		ProductName:  c.Request.FormValue("product"),
-		ProductPrize: prize,
+		ProductPrice: price,
 		CategoryId:   cate.ID,
 		Quantity:     quantit,
 		Size:         size,
@@ -141,17 +141,19 @@ func Delete(c *gin.Context) {
 
 }
 
-func RatingAdding(c *gin.Context) {
-var bind,find database.Ratings
+// func RatingAdding(c *gin.Context) {
+// var bind,find database.Ratings
 
-c.ShouldBindJSON(&bind)
-if err:=helper.DB.First(&find,"product_id=?",bind.ProductId);err.Error != nil{
-	bind.Users=1
-	helper.DB.Create(&bind)
-}else{
-	find.Users=find.Users+1
-	find.Rating=find.Rating+bind.Rating
-	helper.DB.Model(&database.Ratings{}).Where("product_id=?",bind.ProductId).Updates(find)
-}
-c.JSON(200,"Successfully Rated.")
-}
+// c.ShouldBindJSON(&bind)
+// if err:=helper.DB.First(&find,"product_id=?",bind.ProductId);err.Error != nil{
+// 	bind.Users=1
+// 	helper.DB.Create(&bind)
+// }else{
+// 	find.Users=find.Users+1
+// 	find.Rating=find.Rating+bind.Rating
+// 	helper.DB.Model(&database.Ratings{}).Where("product_id=?",bind.ProductId).Updates(find)
+// }
+// c.JSON(200,"Successfully Rated.")
+// }
+
+

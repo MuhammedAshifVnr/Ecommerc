@@ -33,8 +33,7 @@ func AdminRouters(r *gin.RouterGroup) {
 	r.POST("/coupon",admin.AddCoupons)
 
 
-	//rating
-	r.POST("/rating",admin.RatingAdding)
+	
 //helper
 	r.PATCH("/recover/:ID",admin.DeleteRecovery)
 //image adding

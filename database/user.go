@@ -51,7 +51,9 @@ type Order struct {
 	gorm.Model
 	UserID        uint `gorm:"not null"`
 	User          User
-	Product       string
+	ProductID     uint `gorm:"not null"`
+	Product       Product
+	Quantity      uint   `gorm:"not null"`
 	PaymentMethod string `gorm:"not null"`
 	AddressID     uint   `gorm:"not null"`
 	Address       Address
