@@ -43,6 +43,9 @@ func ProductDetail(c *gin.Context) {
 		stock = "Available"
 	}
 	helper.DB.Where("category_id=?", find.CategoryId).Find(&table)
+	var rating []database.Review
+	helper.DB.Where("product_id=?", find.ID).Find(&rating)
+	avg := AvgRating(rating)
 	c.JSON(200, gin.H{
 		"Name":        find.ProductName,
 		"Prize":       find.ProductPrice,
@@ -51,7 +54,14 @@ func ProductDetail(c *gin.Context) {
 		"Description": find.Description,
 		"Category":    find.Category.Name,
 		"Images":      find.ImageUrls,
+		"Rating":      avg,
 	})
+	for _, v := range rating {
+		c.JSON(200,gin.H{
+			"Rating":v.Rating,
+			"Review":v.Comment,
+		})
+	}
 	helper.DB.Where("product_id=?", id).First(&review)
 	c.JSON(200, "Recommend Products")
 	for i := 0; i < len(table); i++ {
@@ -73,5 +83,5 @@ func AvgRating(ratings []database.Review) float64 {
 	for _, v := range ratings {
 		avg += v.Rating
 	}
-	return avg/float64(len(ratings))
+	return avg / float64(len(ratings))
 }

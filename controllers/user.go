@@ -30,6 +30,7 @@ func UserRouters(r *gin.RouterGroup) {
 	r.PATCH("/cart/:ID",users.CartQuantity)
 	r.DELETE("/cart/:ID",users.CartDelete)
 	r.POST("/checkout",users.CheckOut)
+	r.POST("/review/:ID",users.CreatReview)
 
 	r.GET("/order",users.Order)
 	r.GET("/order-item/:ID",users.OrderDetils)

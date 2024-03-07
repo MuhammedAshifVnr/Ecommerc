@@ -38,6 +38,6 @@ type Review struct {
 	User      User
 	ProductID uint
 	Product   Product
-	Rating    float64
-	Comment   string
+	Rating    float64 `json:"rating"`
+	Comment   string  `json:"review"`
 }

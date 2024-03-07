@@ -34,6 +34,7 @@ func CheckOut(c *gin.Context) {
 		}
 	}
 	var totalAmount float64
+	couponCount := 1
 	for _, cartItem := range cartItems {
 		Amount := (cartItem.Product.ProductPrice * float64(cartItem.Quantity))
 
@@ -59,9 +60,10 @@ func CheckOut(c *gin.Context) {
 			ProductID:     cartItem.Product.ID,
 			Quantity:      cartItem.Quantity,
 		}
-		if couponCode != "" {
+		if couponCode != "" && couponCount != 0 {
 			Amount -= coupon.Amount
 			order.CouponID = coupon.ID
+			couponCount--
 		} else {
 			order.CouponID = 4
 		}
@@ -113,9 +115,12 @@ func OrderDetils(c *gin.Context) {
 func CancelOrder(c *gin.Context) {
 	id := c.Param("ID")
 	var order database.Order
-	helper.DB.Where("id=?", id).First(&order)
+	helper.DB.Preload("Product").Where("id=?", id).First(&order)
 	order.Status = "cancelled"
+	order.Product.Quantity+=int(order.Quantity)
 	order.Reason = c.Request.FormValue("reason")
 	helper.DB.Save(&order)
+	helper.DB.Model(&order.Product).Updates(&order.Product)
+	
 	c.JSON(200, "Order Cancelled.")
 }

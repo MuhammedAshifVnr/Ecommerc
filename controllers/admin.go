@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"ecom/routers/admin"
+	"ecom/routers/users"
 
 	"github.com/gin-gonic/gin"
 )
@@ -31,7 +32,10 @@ func AdminRouters(r *gin.RouterGroup) {
 	//coupons
 	r.GET("/coupon",admin.Coupons)
 	r.POST("/coupon",admin.AddCoupons)
+	r.DELETE("/coupon/:ID",admin.DeleteCoupon)
 
+	r.GET("/order",admin.Orders)
+	r.PATCH("/order/:ID",users.CancelOrder)
 
 	
 //helper

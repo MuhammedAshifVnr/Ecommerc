@@ -26,8 +26,16 @@ func Coupons (c *gin.Context){
 	helper.DB.Find(&coupons)
 	for _, v := range coupons {
 		c.JSON(200,gin.H{
+			"Id":v.ID,
 			"Coupon Code":v.Code,
 			"Amount":v.Amount,
 		})
 	}
+}
+
+func DeleteCoupon(c *gin.Context){
+	Id:=c.Param("ID")
+
+	helper.DB.Where("id=?",Id).Delete(&database.Coupon{})
+	c.JSON(200,"Coupon deleted.")
 }

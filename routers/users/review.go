@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func CreastReview(c *gin.Context) {
+func CreatReview(c *gin.Context) {
 	var input database.Review
 	id, _ := strconv.ParseUint(c.Param("ID"), 10, 64)
 	c.ShouldBindJSON(&input)
