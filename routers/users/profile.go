@@ -9,10 +9,13 @@ import (
 )
 
 func Profile(c *gin.Context) {
+	var user database.User
+	helper.DB.Where("id=?",Find.ID).First(&user)
 	c.JSON(200, gin.H{
-		"Name":          Find.Name,
-		"Email":         Find.Email,
-		"Mobile Number": Find.Mobile,
+		"Name":          user.Name,
+		"Email":         user.Email,
+		"Mobile Number": user.Mobile,
+		"Gender":        user.Gender,
 	})
 }
 
@@ -26,27 +29,44 @@ func AddAddress(c *gin.Context) {
 
 }
 
-func Address(c *gin.Context){
+func Address(c *gin.Context) {
 	var add []database.Address
 
-	helper.DB.Where("user_id=?",Find.ID).Find(&add)
+	helper.DB.Where("user_id=?", Find.ID).Find(&add)
 
 	for _, v := range add {
-		c.JSON(200,v)
+		c.JSON(200, gin.H{
+			"City":v.City,
+			"ID":v.ID,
+			"State":v.State,
+			"Street":v.Street,
+			"Type":v.Type,
+			"Zip":v.ZipCode,
+		})
 	}
 }
 
-func AddressEdit (c *gin.Context){
+func AddressEdit(c *gin.Context) {
 	id := c.Param("ID")
 	var add database.Address
 	c.ShouldBindJSON(&add)
-	add.UserId=Find.ID
-	helper.DB.Model(&database.Address{}).Where("id=?",id).Updates(add)
-	c.JSON(200,"Successfully Edited.")
+	add.UserId = Find.ID
+	helper.DB.Model(&database.Address{}).Where("id=?", id).Updates(add)
+	c.JSON(200, "Successfully Edited.")
 }
 
-func AddressDelete (c *gin.Context){
+func AddressDelete(c *gin.Context) {
 	id := c.Param("ID")
 	var add database.Address
-	helper.DB.Where("id=?",id).Delete(&add)
+	helper.DB.Where("id=?", id).Delete(&add)
+}
+
+func EditeProfile(c *gin.Context) {
+	var edite database.User
+	helper.DB.Where("id=?", Find.ID).First(&edite)
+	c.ShouldBindJSON(&edite)
+	if err:=helper.DB.Save(&edite);err.Error !=nil{
+		c.JSON(400,"can't save")
+	}
+	c.JSON(200, "Updated.")
 }

@@ -4,6 +4,8 @@ import (
 	"ecom/controllers"
 	"ecom/helper"
 
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 )
 
@@ -13,8 +15,10 @@ func init() {
 }
 
 func main() {
-
 	router := gin.Default()
+	
+	store := cookie.NewStore([]byte("secret"))
+	router.Use(sessions.Sessions("mysession", store))
 
 	User := router.Group("/user")
 	controllers.UserRouters(User)
@@ -23,6 +27,5 @@ func main() {
 	controllers.AdminRouters(Admin)
 
 	router.Run(":8080")
-	
 
 }

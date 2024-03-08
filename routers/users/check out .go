@@ -86,11 +86,12 @@ func CheckOut(c *gin.Context) {
 
 func Order(c *gin.Context) {
 	var orders []database.Order
-	helper.DB.Where("user_id=?", Find.ID).Find(&orders)
+	helper.DB.Preload("Product").Where("user_id=?", Find.ID).Find(&orders)
 	for _, order := range orders {
 		c.JSON(200, gin.H{
 			"ID":      order.ID,
-			"Product": order.Product,
+			"ProductID":order.ProductID,
+			"Product": order.Product.ProductName,
 			"Amount":  order.Amount,
 			"Status":  order.Status,
 		})
@@ -100,9 +101,9 @@ func Order(c *gin.Context) {
 func OrderDetils(c *gin.Context) {
 	var order database.Order
 	id := c.Param("ID")
-	helper.DB.Preload("Coupon").Where("id=?", id).First(&order)
+	helper.DB.Preload("Product").Preload("Coupon").Where("id=?", id).First(&order)
 	c.JSON(200, gin.H{
-		"Product":         order.Product,
+		"Product":         order.Product.ProductName,
 		"Amount":          order.Amount,
 		"Coupon":          order.Coupon.Code,
 		"Status":          order.Status,

@@ -1,46 +1,49 @@
 package controllers
 
 import (
+	"ecom/middleware"
 	"ecom/routers/admin"
 	"ecom/routers/users"
 
 	"github.com/gin-gonic/gin"
 )
 
-func AdminRouters(r *gin.RouterGroup) {
-//login
-	r.POST("/login", admin.AdminLogin)
-	r.GET("/home", admin.HomePage)
+var role = "admin"
 
-//product
-	r.GET("/product", admin.Product)
-	r.POST("/product", admin.AddProduct)
-	r.PUT("/product/:ID", admin.EditProdect)
-	r.DELETE("/product/:ID", admin.Delete)
-	
+func AdminRouters(r *gin.RouterGroup) {
+	//login
+	r.POST("/login", admin.AdminLogin)
+	r.GET("/logout",admin.Logout)
+	r.GET("/home", middleware.AuthMiddleware(role), admin.HomePage)
+
+	//product
+	r.GET("/product", middleware.AuthMiddleware(role), admin.Product)
+	r.POST("/product", middleware.AuthMiddleware(role), admin.AddProduct)
+	r.PUT("/product/:ID", middleware.AuthMiddleware(role), admin.EditProdect)
+	r.DELETE("/product/:ID", middleware.AuthMiddleware(role), admin.Delete)
+
 	//users
-	r.GET("/users",admin.UsersList)
-	r.PATCH("/users/:ID",admin.UserStatus)
+	r.GET("/users", middleware.AuthMiddleware(role), admin.UsersList)
+	r.PATCH("/users/:ID", middleware.AuthMiddleware(role), admin.UserStatus)
 
 	//category
-	r.GET("/category",admin.Category)
-	r.POST("/category",admin.AddCategory)
-	r.PUT("/category/:ID",admin.EditCategory)
-	r.PATCH("/category/:ID",admin.BlockCategory)
-	r.DELETE("/category/:ID",admin.DeleteCategory)
+	r.GET("/category", middleware.AuthMiddleware(role), admin.Category)
+	r.POST("/category", middleware.AuthMiddleware(role), admin.AddCategory)
+	r.PUT("/category/:ID", middleware.AuthMiddleware(role), admin.EditCategory)
+	r.PATCH("/category/:ID", middleware.AuthMiddleware(role), admin.BlockCategory)
+	r.DELETE("/category/:ID", middleware.AuthMiddleware(role), admin.DeleteCategory)
 
 	//coupons
-	r.GET("/coupon",admin.Coupons)
-	r.POST("/coupon",admin.AddCoupons)
-	r.DELETE("/coupon/:ID",admin.DeleteCoupon)
+	r.GET("/coupon", middleware.AuthMiddleware(role), admin.Coupons)
+	r.POST("/coupon", middleware.AuthMiddleware(role), admin.AddCoupons)
+	r.DELETE("/coupon/:ID", middleware.AuthMiddleware(role), admin.DeleteCoupon)
 
-	r.GET("/order",admin.Orders)
-	r.PATCH("/order/:ID",users.CancelOrder)
+	r.GET("/order", middleware.AuthMiddleware(role), admin.Orders)
+	r.PATCH("/order/update/:ID",middleware.AuthMiddleware(role),admin.UpdateOrder)
+	r.PATCH("/order/:ID", middleware.AuthMiddleware(role), users.CancelOrder)
 
-	
-//helper
-	r.PATCH("/recover/:ID",admin.DeleteRecovery)
-//image adding
-	//r.POST("/imageadding",admin.ImageAdding)
+	//helper
+	r.PATCH("/recover/:ID", admin.DeleteRecovery)
+
 
 }

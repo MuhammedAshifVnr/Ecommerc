@@ -20,6 +20,19 @@ func Orders(c *gin.Context) {
 			"Quantity":v.Quantity,
 			"Price":v.Amount,
 			"Coupon":v.Coupon.Code,
+			"Status":v.Status,
 		})
 	}
+}
+
+func UpdateOrder(c *gin.Context)  {
+	id := c.Param("ID")
+	var order database.Order
+	helper.DB.Preload("Product").Where("id=?", id).First(&order)
+	order.Status = c.Request.FormValue("status")
+	if order.Status ==""{
+		c.JSON(400,"Status Field Required")
+	}
+	helper.DB.Save(&order)
+
 }

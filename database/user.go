@@ -60,6 +60,6 @@ type Order struct {
 	CouponID      uint
 	Coupon        Coupon
 	Amount        float64
-	Status        string `gorm:"not null;default:'shipped'"`
+	Status        string `gorm:"not null;default:'pending'"`
 	Reason        string
 }
