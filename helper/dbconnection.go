@@ -12,9 +12,9 @@ import (
 
 var DB *gorm.DB
 
-func EnvLoader(){
-	err:= godotenv.Load()
-	if err != nil{
+func EnvLoader() {
+	err := godotenv.Load()
+	if err != nil {
 		fmt.Println("-------------Faild to load env file------------ ")
 	}
 }
@@ -30,8 +30,8 @@ func DbConnect() {
 
 	DB = db
 
-	DB.AutoMigrate(&database.Order{},&database.User{},&database.Admin{},&database.Coupon{},&database.Cart{},&database.Address{},&database.Product{},&database.Review{},database.Category{},database.Otp{})
-
+	DB.AutoMigrate(&database.OrderItems{}, &database.Order{}, &database.User{}, &database.Admin{}, &database.Category{}, &database.Otp{})
+	DB.AutoMigrate(&database.Whislist{}, &database.Coupon{}, &database.Cart{}, &database.Address{}, &database.Product{}, &database.Review{})
 	fmt.Println("SUCCESSFULLY connected to DATABASE")
 
 }

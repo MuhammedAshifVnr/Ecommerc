@@ -25,6 +25,7 @@ func Product(c *gin.Context) {
 			"Prize":        v.ProductPrice,
 			"Status":       v.Status,
 			"images":       v.ImageUrls,
+			"Stock":        v.Quantity,
 		})
 	}
 
@@ -140,20 +141,4 @@ func Delete(c *gin.Context) {
 	c.JSON(http.StatusSeeOther, "Successfylly Deleted.")
 
 }
-
-// func RatingAdding(c *gin.Context) {
-// var bind,find database.Ratings
-
-// c.ShouldBindJSON(&bind)
-// if err:=helper.DB.First(&find,"product_id=?",bind.ProductId);err.Error != nil{
-// 	bind.Users=1
-// 	helper.DB.Create(&bind)
-// }else{
-// 	find.Users=find.Users+1
-// 	find.Rating=find.Rating+bind.Rating
-// 	helper.DB.Model(&database.Ratings{}).Where("product_id=?",bind.ProductId).Updates(find)
-// }
-// c.JSON(200,"Successfully Rated.")
-// }
-
 

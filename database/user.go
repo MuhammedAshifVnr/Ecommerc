@@ -14,6 +14,7 @@ type User struct {
 	Status   string `gorm:"default:Active"`
 	Mobile   int    `json:"mobile"`
 	Gender   string `json:"gender"`
+	Role     string `gorm:"default:user"`
 }
 
 type Otp struct {
@@ -48,18 +49,35 @@ type Coupon struct {
 }
 
 type Order struct {
-	gorm.Model
+	ID            uint `gorm:"primarykey"`
 	UserID        uint `gorm:"not null"`
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
 	User          User
-	ProductID     uint `gorm:"not null"`
-	Product       Product
-	Quantity      uint   `gorm:"not null"`
 	PaymentMethod string `gorm:"not null"`
 	AddressID     uint   `gorm:"not null"`
 	Address       Address
-	CouponID      uint
+	CouponID      uint `gorm:"default:4"`
 	Coupon        Coupon
 	Amount        float64
-	Status        string `gorm:"not null;default:'pending'"`
-	Reason        string
+}
+
+type OrderItems struct {
+	gorm.Model
+	ProductID uint
+	Product   Product
+	Quantity  uint
+	Amount    float64
+	OrderID   uint
+	Order     Order
+	Status    string `gorm:"not null;default:'pending'"`
+	Reason    string
+}
+
+type Whislist struct{
+	gorm.Model
+	UserID uint
+	User User
+	ProductID uint
+	Product Product
 }

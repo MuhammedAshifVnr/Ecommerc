@@ -13,7 +13,8 @@ func AddCart(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("ID"))
 	var cart database.Cart
 	var product database.Product
-	helper.DB.Where("product_id=? AND user_id=?", id, Find.ID).First(&cart)
+	userId:=c.GetUint("userID")
+	helper.DB.Where("product_id=? AND user_id=?", id, userId).First(&cart)
 	if cart.ID != 0 {
 		c.JSON(400, "Item alredy in cart.")
 		return
@@ -24,7 +25,7 @@ func AddCart(c *gin.Context) {
 		return
 	}
 	cart = database.Cart{
-		UserID:    Find.ID,
+		UserID:    userId,
 		ProductID: uint(id),
 		Quantity:  1,
 	}
@@ -34,7 +35,7 @@ func AddCart(c *gin.Context) {
 
 func Cart(c *gin.Context) {
 	var cart []database.Cart
-	helper.DB.Preload("Product").Where("user_id=?", Find.ID).Find(&cart)
+	helper.DB.Preload("Product").Where("user_id=?", c.GetUint("userID")).Find(&cart)
 	for _, v := range cart {
 
 		c.JSON(200, gin.H{
@@ -67,12 +68,19 @@ func CartQuantity(c *gin.Context) {
 	quantity, _ := strconv.Atoi(c.Request.FormValue("quantity"))
 
 	helper.DB.Preload("Product").Where("id=?", id).First(&cart)
+
+	if quantity > 10 {
+		c.JSON(http.StatusBadRequest, "Only 10 unit's allowed each order")
+		return
+	}
 	if quantity > cart.Product.Quantity {
 		c.JSON(http.StatusBadRequest, "Product is out of stock")
 		return
 	}
-	if quantity > 10 {
-		c.JSON(http.StatusBadRequest, "Only 10 unit's allowed each order")
+	if quantity<=0{
+		c.JSON(400,gin.H{
+			"error":"Please Enter a valid Quantity.",
+		})
 		return
 	}
 

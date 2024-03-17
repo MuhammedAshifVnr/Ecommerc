@@ -3,7 +3,7 @@ package admin
 import (
 	"ecom/database"
 	"ecom/helper"
-	"ecom/middleware"
+	"ecom/jwt"
 	"fmt"
 	"net/http"
 
@@ -11,12 +11,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var AdminTable database.Admin
-
 // ..................................login post......................
 
 func AdminLogin(c *gin.Context) {
 	var find database.Admin
+	var AdminTable database.Admin
 	if err := c.ShouldBindJSON(&find); err != nil {
 		c.JSON(http.StatusSeeOther, "Something went wrong.")
 	}
@@ -27,7 +26,11 @@ func AdminLogin(c *gin.Context) {
 		c.JSON(http.StatusSeeOther, "Invalid Username or Password")
 		fmt.Println(AdminTable, find)
 	} else {
-		middleware.SessionCreate(find.Username,"admin",c)
+		token, err := jwt.GenerateToken("admin", AdminTable.Username, AdminTable.ID, AdminTable.Name)
+		if err != nil {
+			fmt.Println("TOken cant generate.")
+		}
+		fmt.Println(token)
 		c.JSON(200, "Successfuly logined")
 
 	}
@@ -36,8 +39,10 @@ func AdminLogin(c *gin.Context) {
 //..............after login show this page list of users.........................
 
 func HomePage(c *gin.Context) {
-
-	c.JSON(http.StatusSeeOther, "Welcome "+AdminTable.Name)
+	admin := c.GetString("username")
+	c.JSON(http.StatusSeeOther, gin.H{
+		"Message": "Welcome " + admin,
+	})
 
 }
 
