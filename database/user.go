@@ -46,6 +46,7 @@ type Coupon struct {
 	gorm.Model
 	Code   string `gorm:"unique"`
 	Amount float64
+	Limit  uint
 }
 
 type Order struct {
@@ -60,6 +61,7 @@ type Order struct {
 	CouponID      uint `gorm:"default:4"`
 	Coupon        Coupon
 	Amount        float64
+	PaymentID     string
 }
 
 type OrderItems struct {
@@ -74,10 +76,18 @@ type OrderItems struct {
 	Reason    string
 }
 
-type Whislist struct{
+type Whislist struct {
 	gorm.Model
-	UserID uint
-	User User
+	UserID    uint
+	User      User
 	ProductID uint
-	Product Product
+	Product   Product
+}
+type Transactions struct {
+	gorm.Model
+	OrderID   string
+	PaymentID string
+	Amount    float64
+	Receipt   string
+	Status    string
 }

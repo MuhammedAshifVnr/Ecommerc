@@ -11,9 +11,11 @@ import (
 func AddCoupons(c *gin.Context) {
 	
 	amount, _ := strconv.ParseFloat(c.Request.FormValue("amount"),64)
+	limit, _ := strconv.ParseFloat(c.Request.FormValue("limit"),64)
 	coupon :=database.Coupon{
 		Code: c.Request.FormValue("code"),
 		Amount: amount,
+		Limit: uint(limit),
 	}
 	
 	helper.DB.Create(&coupon)
