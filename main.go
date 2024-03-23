@@ -1,8 +1,8 @@
 package main
 
 import (
-	"ecom/controllers"
 	"ecom/helper"
+	"ecom/routes"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
@@ -21,10 +21,10 @@ func main() {
 	router.Use(sessions.Sessions("mysession", store))
 
 	User := router.Group("/user")
-	controllers.UserRouters(User)
+	routes.UserRouters(User)
 
 	Admin := router.Group("/admin")
-	controllers.AdminRouters(Admin)
+	routes.AdminRouters(Admin)
 
 	router.Run(":8080")
 

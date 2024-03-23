@@ -93,7 +93,6 @@ func Testcheckout(c *gin.Context) {
 	totalAmount -= coupon.Amount
 
 	tx.Model(&database.Order{}).Where("id=?", orderID).Update("amount", totalAmount)
-	tx.Commit()
 
 	if order.PaymentMethod == "ONLINE" {
 		paymentOrder, err := razorpayClient.Order.Create(map[string]interface{}{
@@ -103,10 +102,18 @@ func Testcheckout(c *gin.Context) {
 		}, nil)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
-				"error": err.Error(),
+				"error===": err.Error(),
 			})
 			return
 		}
+		payment := database.Transactions{
+			OrderID: paymentOrder["id"].(string),
+			Amount:  totalAmount,
+			Status:  "Failed",
+			Receipt: orderID,
+		}
+		helper.DB.Create(&payment)
+		tx.Commit()
 		helper.DB.Model(&database.Order{}).Where("id=?", orderID).Update("payment_id", paymentOrder["id"])
 		c.JSON(http.StatusOK, gin.H{
 			"message":   "Order Placed Successfully.",
@@ -114,10 +121,28 @@ func Testcheckout(c *gin.Context) {
 			"PaymentID": paymentOrder["id"],
 		})
 	} else if order.PaymentMethod == "COD" {
+		tx.Commit()
 		c.JSON(http.StatusOK, gin.H{
 			"message": "Order Placed Successfully. Product Get Soon",
 			"Amount":  totalAmount,
 		})
+	} else if order.PaymentMethod == "WALLET" {
+		var wallet database.Wallet
+		helper.DB.Where("user_id=?", userId).First(&wallet)
+		if totalAmount <= wallet.Amount {
+			wallet.Amount -= totalAmount
+			helper.DB.Save(&wallet)
+			tx.Commit()
+			c.JSON(http.StatusOK, gin.H{
+				"message": "Order Placed Successfully.",
+				"Amount":  totalAmount,
+			})
+		} else {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"message": "Inefficient Balance",
+			})
+		}
+
 	}
 
 	//=========must implement after checkout cartitems delete======
@@ -130,10 +155,11 @@ func Order(c *gin.Context) {
 	helper.DB.Preload("Order", "user_id=?", userId).Preload("Product").Find(&orders)
 	for _, order := range orders {
 		c.JSON(200, gin.H{
-			"ID":        order.ID,
-			"ProductID": order.Product.ID,
-			"Product":   order.Product.ProductName,
-			"OrderID":   order.Order.ID,
+			"ID":            order.ID,
+			"ProductID":     order.Product.ID,
+			"Product":       order.Product.ProductName,
+			"OrderID":       order.Order.ID,
+			"PaymentMethod": order.Order.PaymentMethod,
 		})
 	}
 }
@@ -177,52 +203,40 @@ func CancelOrder(c *gin.Context) {
 		//this showing an error the coupon id not update must check that
 		orderItem.Order.CouponID = 4
 		helper.DB.Model(&orderItem.Order).Updates(&orderItem.Order)
+		if orderItem.Order.PaymentMethod == "ONLINE" {
+			var wellet database.Wallet
+			if err := helper.DB.Where("user_id=?", c.GetUint("userID")).First(&wellet); err.Error != nil {
+				fmt.Println("error is =", err.Error)
+				return
+			}
+			fmt.Println(wellet)
+			wellet.Amount += orderItem.Amount - orderItem.Order.Coupon.Amount
+			helper.DB.Save(&wellet)
+			orderItem.Status = "Cancelled"
+			helper.DB.Save(&orderItem)
+		}
+	} else {
+		if orderItem.Order.PaymentMethod == "ONLINE" {
+			var wellet database.Wallet
+			if err := helper.DB.Where("user_id=?", c.GetUint("userID")).First(&wellet); err.Error != nil {
+				fmt.Println("error is =", err.Error)
+				return
+			}
+			fmt.Println(wellet)
+			wellet.Amount += orderItem.Amount
+			helper.DB.Save(&wellet)
+		}
+		orderItem.Status = "Cancelled"
+		helper.DB.Model(&orderItem.Order).Updates(&orderItem.Order)
+		helper.DB.Save(&orderItem)
 	}
-	orderItem.Status = "Cancelled"
-	helper.DB.Model(&orderItem.Order).Updates(&orderItem.Order)
-	helper.DB.Save(&orderItem)
 	c.JSON(200, "Order Cancelled.")
-
-	// if {
-	// 	orderItem.Order.Amount = orderItem.Order.Amount - (orderItem.Amount - orderItem.Order.Coupon.Amount)
-	// 	fmt.Println(orderItem.Order.CouponID)
-	// 	if err := helper.DB.Model(&orderItem.Order).Updates(&orderItem.Order); err.Error != nil {
-	// 		c.JSON(http.StatusBadRequest, gin.H{
-	// 			"error": "Can't Update the coupon id and amount.",
-	// 		})
-	// 		return
-	// 	}
-	// 	orderItem.Order.CouponID = 4
-	// 	if err := helper.DB.Model(&orderItem.Order).Updates(&orderItem.Order); err.Error != nil {
-	// 		c.JSON(http.StatusBadRequest, gin.H{
-	// 			"error": "Can't Update the coupon id and amount.",
-	// 		})
-	// 		return
-	// 	}
-	// } else {
-	// 	orderItem.Status = "Cancelled"
-	// 	orderItem.Order.Amount -= orderItem.Amount
-	// 	fmt.Println(orderItem.Order.Amount)
-	// 	if err := helper.DB.Model(&orderItem.Order).Updates(&orderItem.Order); err.Error != nil {
-	// 		c.JSON(http.StatusBadRequest, gin.H{
-	// 			"error": "Can't Update the amount of order table.",
-	// 		})
-	// 		return
-	// 	}
-	// 	if err := helper.DB.Save(&orderItem); err.Error != nil {
-	// 		c.JSON(http.StatusBadRequest, gin.H{
-	// 			"error": "Can't save the orderItem table.",
-	// 		})
-	// 		return
-	// 	}
-
-	// }
 
 }
 
 func generateRandomNumber() string {
 	const charset = "123456789"
-	randomBytes := make([]byte, 8)
+	randomBytes := make([]byte, 6)
 	_, err := rand.Read(randomBytes)
 	if err != nil {
 		fmt.Println(err)

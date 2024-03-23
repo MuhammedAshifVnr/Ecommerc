@@ -1,4 +1,4 @@
-package controllers
+package routes
 
 import (
 	"ecom/jwt"
@@ -49,6 +49,7 @@ func UserRouters(r *gin.RouterGroup) {
 		c.HTML(200,"payment.html",nil)
 	})
 	r.POST("/razorpay-payment",users.HandleRazorpayPayment)
+	
 
 	r.GET("/search-product", jwt.AuthMiddleware(UserRole), users.SeaechProduct)
 

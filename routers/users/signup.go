@@ -22,8 +22,8 @@ func Signup(c *gin.Context) {
 	user = database.User{}
 	var find database.Otp
 	c.ShouldBindJSON(&user)
-	if err:=helper.DB.Where("email=?",user.Email).First(&find);err==nil{
-		c.JSON(200,"Email alredy exist.")
+	if err := helper.DB.Where("email=?", user.Email).First(&find); err == nil {
+		c.JSON(200, "Email alredy exist.")
 		return
 	}
 	hashedPassword, error := bcrypt.GenerateFromPassword([]byte(user.Password), 8)
@@ -69,9 +69,19 @@ func OtpChecker(c *gin.Context) {
 	if err := helper.DB.Create(&user); err.Error != nil {
 		c.JSON(200, "Email Found Duplicate.")
 		return
+	} else {
+		var user database.User
+		if err:=helper.DB.Where("email=?",find.Email).First(&user);err.Error!=nil{
+			fmt.Println("email fount :",find.Email)
+			fmt.Println("==========",err.Error)
+		}
+		wallet := database.Wallet{
+			UserID: user.ID,
+			Amount: 0.0,
+		}
+		helper.DB.Create(&wallet)
+		c.JSON(200, "Successfully Created User.")
 	}
-
-	c.JSON(200, "Successfully Created User.")
 
 }
 
@@ -93,5 +103,5 @@ func ResendOtp(c *gin.Context) {
 		})
 	}
 	helper.SendOtp(user.Email, otp)
-	c.JSON(200,"send otp to given mail :"+otp)
+	c.JSON(200, "send otp to given mail :"+otp)
 }

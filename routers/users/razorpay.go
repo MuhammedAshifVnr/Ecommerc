@@ -33,9 +33,9 @@ func HandleRazorpayPayment(c *gin.Context) {
 	fmt.Println(respons)
 	payment:=database.Transactions{
 		PaymentID: respons["razorpay_payment_id"],
-		OrderID: respons["razorpay_order_id"],
+		Status: "Success",
 	}
-	helper.DB.Create(&payment)
+	helper.DB.Where("order_id=?",respons["razorpay_order_id"]).Updates(&payment)
 	c.JSON(http.StatusOK, gin.H{"message": "Payment response received successfully"})
 }
 

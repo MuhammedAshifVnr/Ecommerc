@@ -88,6 +88,14 @@ type Transactions struct {
 	OrderID   string
 	PaymentID string
 	Amount    float64
-	Receipt   string
+	Receipt   uint64
 	Status    string
+}
+
+type Wallet struct{
+	gorm.Model
+	UserID uint
+	User User
+	Amount float64
+	
 }
