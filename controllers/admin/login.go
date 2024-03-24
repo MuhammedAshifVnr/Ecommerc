@@ -45,9 +45,21 @@ func HomePage(c *gin.Context) {
 	admin := c.GetString("username")
 	var orders []database.OrderItems
 	helper.DB.Preload("Product").Preload("Order.User").Find(&orders)
-
+	var total float64
+	var cancel, conform int
+	for _, order := range orders {
+		if order.Status == "Cancelled" {
+			cancel++
+		} else {
+			conform++
+		}
+		total += order.Amount
+	}
 	c.JSON(http.StatusSeeOther, gin.H{
-		"Message": "Welcome " + admin,
+		"Message":           "Welcome " + admin,
+		"TotalSaleAmount: ": total,
+		"ConmformCount: ":   conform,
+		"CancelledOrders: ": cancel,
 	})
 
 	// for _, order := range orders {

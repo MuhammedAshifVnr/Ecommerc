@@ -30,8 +30,8 @@ func DownloadReport(c *gin.Context) {
 		startTime = time.Now().AddDate(-1, 0, 0)
 		endTime = time.Now()
 	case "custom":
-		startStr := c.Query("start_date")
-		endStr := c.Query("end_date")
+		startStr := c.Request.FormValue("start_date")
+		endStr := c.Request.FormValue("end_date")
 		var err error
 		startTime, err = time.Parse("2006-01-02", startStr)
 		if err != nil {
