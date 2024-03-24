@@ -53,8 +53,8 @@ func Testcheckout(c *gin.Context) {
 	}
 	var totalAmount float64
 	for _, item := range cartitems {
-		amount := item.Product.ProductPrice * float64(item.Quantity)
-		if item.Quantity > uint(item.Product.Quantity) {
+		amount := (item.Product.ProductPrice - ProductOffer(item.ProductID)) * float64(item.Quantity)
+		if item.Quantity >= uint(item.Product.Quantity) {
 			tx.Rollback()
 			c.JSON(http.StatusBadRequest, gin.H{
 				"error": "Insufficent stock for product " + item.Product.ProductName,
@@ -87,6 +87,7 @@ func Testcheckout(c *gin.Context) {
 		totalAmount += amount
 	}
 	if totalAmount <= float64(coupon.Limit) {
+		tx.Rollback()
 		c.JSON(http.StatusBadRequest, gin.H{"error": "You can't use this coupon."})
 		return
 	}
@@ -101,6 +102,7 @@ func Testcheckout(c *gin.Context) {
 			"receipt":  strconv.Itoa(int(orderID)),
 		}, nil)
 		if err != nil {
+			tx.Rollback()
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"error===": err.Error(),
 			})
@@ -138,6 +140,7 @@ func Testcheckout(c *gin.Context) {
 				"Amount":  totalAmount,
 			})
 		} else {
+			tx.Rollback()
 			c.JSON(http.StatusBadRequest, gin.H{
 				"message": "Inefficient Balance",
 			})

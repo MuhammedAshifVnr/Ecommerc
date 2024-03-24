@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Report</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Sales Report</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Order ID</th>
+                <th>User ID</th>
+                <th>Product Name</th>
+                <th>Payment Method</th>
+                <th>Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{range .orders}}
+            <tr>
+                <td>{{.ID}}</td>
+                <td>{{.OrderID}}</td>
+                <td>{{.Order.User.Email}}</td>
+                <td>{{.Product.ProductName}}</td>
+                <td>{{.Order.PaymentMethod}}</td>
+                <td>{{.Amount}}</td>
+            </tr>
+            {{end}}
+        </tbody>
+    </table>
+</body>
+</html>

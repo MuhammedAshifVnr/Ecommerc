@@ -1,6 +1,8 @@
 package database
 
 import (
+	"time"
+
 	"github.com/lib/pq"
 	"gorm.io/gorm"
 )
@@ -40,4 +42,12 @@ type Review struct {
 	Product   Product
 	Rating    float64 `json:"rating"`
 	Comment   string  `json:"review"`
+}
+
+type Offers struct {
+	gorm.Model
+	ProductID  uint
+	Product    Product
+	Percentage float64
+	Expirey    time.Time
 }

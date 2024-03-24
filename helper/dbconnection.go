@@ -30,8 +30,8 @@ func DbConnect() {
 
 	DB = db
 
-	DB.AutoMigrate(&database.Wallet{},&database.OrderItems{}, &database.Order{}, &database.User{}, &database.Admin{}, &database.Category{}, &database.Otp{})
-	DB.AutoMigrate(&database.Transactions{},&database.Whislist{}, &database.Coupon{}, &database.Cart{}, &database.Address{}, &database.Product{}, &database.Review{})
+	DB.AutoMigrate(&database.Wallet{}, &database.OrderItems{}, &database.Order{}, &database.User{}, &database.Admin{}, &database.Category{}, &database.Otp{})
+	DB.AutoMigrate(&database.Offers{}, &database.Transactions{}, &database.Whislist{}, &database.Coupon{}, &database.Cart{}, &database.Address{}, &database.Product{}, &database.Review{})
 	fmt.Println("SUCCESSFULLY connected to DATABASE")
 
 }

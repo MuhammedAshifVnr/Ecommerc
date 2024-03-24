@@ -31,7 +31,10 @@ func AdminLogin(c *gin.Context) {
 			fmt.Println("TOken cant generate.")
 		}
 		fmt.Println(token)
-		c.JSON(200, "Successfuly logined")
+		c.JSON(200, gin.H{
+			"massege": "Successfuly logined",
+			"token":   token,
+		})
 
 	}
 }
@@ -40,9 +43,25 @@ func AdminLogin(c *gin.Context) {
 
 func HomePage(c *gin.Context) {
 	admin := c.GetString("username")
+	var orders []database.OrderItems
+	helper.DB.Preload("Product").Preload("Order.User").Find(&orders)
+
 	c.JSON(http.StatusSeeOther, gin.H{
 		"Message": "Welcome " + admin,
 	})
+
+	// for _, order := range orders {
+	// 	c.JSON(303, gin.H{
+	// 		"ProductName":   order.Product.ProductName,
+	// 		"OrderID":       order.OrderID,
+	// 		"Amount":        order.Amount,
+	// 		"ID":            order.ID,
+	// 		"PaymentMethod": order.Order.PaymentMethod,
+	// 		"UserName":      order.Order.User.Email,
+	// 		"Quantity":      order.Quantity,
+	// 		"Status":        order.Status,
+	// 	})
+	// }
 
 }
 

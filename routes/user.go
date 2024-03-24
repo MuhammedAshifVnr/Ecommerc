@@ -2,7 +2,7 @@ package routes
 
 import (
 	"ecom/jwt"
-	"ecom/routers/users"
+	"ecom/controllers/users"
 
 	"github.com/gin-gonic/gin"
 )
@@ -20,8 +20,8 @@ func UserRouters(r *gin.RouterGroup) {
 	r.GET("/forgot", users.OtpValidation)
 	r.PATCH("/forgot", users.UpdatePassword)
 
-	r.GET("/home", jwt.AuthMiddleware(UserRole), users.Homepage)
-	r.GET("/productDetail/:ID", jwt.AuthMiddleware(UserRole), users.ProductDetail)
+	r.GET("/home", users.Homepage)
+	r.GET("/productDetail/:ID", users.ProductDetail)
 	r.GET("/profile", jwt.AuthMiddleware(UserRole), users.Profile)
 	r.PATCH("/profile", jwt.AuthMiddleware(UserRole), users.EditeProfile)
 
