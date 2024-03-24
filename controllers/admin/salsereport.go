@@ -48,8 +48,8 @@ func DownloadReport(c *gin.Context) {
 		return
 	}
 
-	reportData, total := generateReportData(startTime, endTime)
-	pdfPath, err := generatePDF(reportData, total)
+	reportData, total, count := generateReportData(startTime, endTime)
+	pdfPath, err := generatePDF(reportData, total, count)
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Failed to generate PDF file"})
 		return
@@ -61,17 +61,19 @@ func DownloadReport(c *gin.Context) {
 
 }
 
-func generateReportData(starting, ending time.Time) ([]database.OrderItems, float64) {
+func generateReportData(starting, ending time.Time) ([]database.OrderItems, float64, int) {
 	var orders []database.OrderItems
 	var totalAmount float64
-	helper.DB.Preload("Order").Preload("Order.User").Where("status!=? AND created_at BETWEEN ? AND ?","Cancelled", starting, ending).Find(&orders)
+	var count int
+	helper.DB.Preload("Order").Preload("Order.User").Where("status!=? AND created_at BETWEEN ? AND ?", "Cancelled", starting, ending).Find(&orders)
 	for _, item := range orders {
 		totalAmount += item.Amount
+		count++
 	}
-	return orders, totalAmount
+	return orders, totalAmount, count
 }
 
-func generatePDF(orders []database.OrderItems, totalAmount float64) (string, error) {
+func generatePDF(orders []database.OrderItems, totalAmount float64, count int) (string, error) {
 	pdf := gofpdf.New("P", "mm", "A4", "")
 	pdf.AddPage()
 	pdf.SetFont("Arial", "", 10)
@@ -94,6 +96,8 @@ func generatePDF(orders []database.OrderItems, totalAmount float64) (string, err
 		pdf.Ln(-1)
 	}
 
+	pdf.Cell(0, 10, "Total Sales Count: "+strconv.Itoa(count))
+	pdf.Ln(-1)
 	pdf.Cell(0, 10, "Total Amount: "+strconv.FormatFloat(totalAmount, 'f', 2, 64))
 
 	tempFilePath := "/home/ashif/sales/sales_report.pdf"
