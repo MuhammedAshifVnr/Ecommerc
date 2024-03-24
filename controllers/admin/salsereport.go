@@ -64,7 +64,7 @@ func DownloadReport(c *gin.Context) {
 func generateReportData(starting, ending time.Time) ([]database.OrderItems, float64) {
 	var orders []database.OrderItems
 	var totalAmount float64
-	helper.DB.Preload("Order").Preload("Order.User").Where("status!=? AND created_at BETWEEN ? AND ?", "cancelled", starting, ending).Find(&orders)
+	helper.DB.Preload("Order").Preload("Order.User").Where("status!=? AND created_at BETWEEN ? AND ?","Cancelled", starting, ending).Find(&orders)
 	for _, item := range orders {
 		totalAmount += item.Amount
 	}
@@ -78,16 +78,19 @@ func generatePDF(orders []database.OrderItems, totalAmount float64) (string, err
 	pdf.Cell(40, 10, "Sales Report")
 	pdf.Ln(10)
 
-	pdf.Cell(0,12,"Order ID: " + "-"+"	User Email"+ "-"+"	 Payment Mehtod  "+ "-"+"	Amount	"+ "-"+"	Status "+ "-"+"	Date    ")
+	headers := []string{"Order ID", "Customer", "Payment Method", "Total Amount", "Status", "Order Date"}
+	for _, header := range headers {
+		pdf.Cell(32, 10, header)
+	}
 	pdf.Ln(-1)
+
 	for _, order := range orders {
-		pdf.MultiCell(0, 8,
-			" - "+strconv.Itoa(int(order.OrderID))+
-				" - "+order.Order.User.Email+
-				" - "+order.Order.PaymentMethod+
-				" - "+strconv.FormatFloat(order.Amount, 'f', 2, 64)+
-				" - "+order.Status+
-				" - "+order.CreatedAt.Format("2006-01-02 15:04:05"), "", "", false)
+		pdf.Cell(32, 8, strconv.Itoa(int(order.OrderID)))
+		pdf.Cell(32, 8, order.Order.User.Email)
+		pdf.Cell(32, 8, order.Order.PaymentMethod)
+		pdf.Cell(32, 8, strconv.FormatFloat(order.Amount, 'f', 2, 64))
+		pdf.Cell(32, 8, order.Status)
+		pdf.Cell(32, 8, order.CreatedAt.Format("2006-01-02"))
 		pdf.Ln(-1)
 	}
 
