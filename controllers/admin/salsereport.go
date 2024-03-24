@@ -78,20 +78,6 @@ func generatePDF(orders []database.OrderItems, totalAmount float64) (string, err
 	pdf.Cell(40, 10, "Sales Report")
 	pdf.Ln(10)
 
-	// for _, order := range orders {
-	// 	pdf.Cell(0, 5, "Order ID: "+strconv.Itoa(int(order.OrderID)))
-
-	// 	pdf.Cell(0, 5, "User Email: "+order.Order.User.Email)
-
-	// 	pdf.Cell(0, 5, "Order Date: "+order.CreatedAt.Format("2006-01-02 15:04:05"))
-
-	// 	pdf.Cell(0, 5, "Payment Mehtod: "+order.Order.PaymentMethod)
-
-	// 	pdf.Cell(0, 5, "Status: "+order.Status)
-
-	// 	pdf.Cell(0, 5, "Amount: "+strconv.FormatFloat(order.Amount, 'f', 2, 64))
-	// 	pdf.Ln(-1)
-	// }
 	pdf.Cell(0,12,"Order ID: " + "-"+"	User Email"+ "-"+"	 Payment Mehtod  "+ "-"+"	Amount	"+ "-"+"	Status "+ "-"+"	Date    ")
 	pdf.Ln(-1)
 	for _, order := range orders {
