@@ -3,7 +3,7 @@ package users
 import (
 	"ecom/database"
 	"ecom/helper"
-	"ecom/jwt"
+	"ecom/middleware"
 	"fmt"
 	"time"
 
@@ -27,7 +27,7 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	token, err := jwt.GenerateToken(Find.Role, Find.Email, Find.ID,Find.Name)
+	token, err := middleware.GenerateToken(Find.Role, Find.Email, Find.ID,Find.Name)
 	if err != nil {
 		fmt.Println("TOken cant generate.")
 	}

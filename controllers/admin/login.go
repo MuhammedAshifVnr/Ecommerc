@@ -3,7 +3,7 @@ package admin
 import (
 	"ecom/database"
 	"ecom/helper"
-	"ecom/jwt"
+	"ecom/middleware"
 	"fmt"
 	"net/http"
 
@@ -26,7 +26,7 @@ func AdminLogin(c *gin.Context) {
 		c.JSON(http.StatusSeeOther, "Invalid Username or Password")
 		fmt.Println(AdminTable, find)
 	} else {
-		token, err := jwt.GenerateToken("admin", AdminTable.Username, AdminTable.ID, AdminTable.Name)
+		token, err := middleware.GenerateToken("admin", AdminTable.Username, AdminTable.ID, AdminTable.Name)
 		if err != nil {
 			fmt.Println("TOken cant generate.")
 		}
