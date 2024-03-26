@@ -39,11 +39,12 @@ func Cart(c *gin.Context) {
 	for _, v := range cart {
 		discount := ProductOffer(v.ProductID)
 		c.JSON(200, gin.H{
-			"ID":      v.ID,
-			"Product": v.Product.ProductName,
-			"Prize":   v.Product.ProductPrice - discount,
-			"Image":   v.Product.ImageUrls,
-			"Qty":     v.Quantity,
+			"ID":       v.ID,
+			"Product":  v.Product.ProductName,
+			"Prize":    v.Product.ProductPrice - discount,
+			"Image":    v.Product.ImageUrls,
+			"Qty":      v.Quantity,
+			"Discount": ProductOffer(v.ProductID),
 		})
 	}
 	var total float64
@@ -53,7 +54,7 @@ func Cart(c *gin.Context) {
 		total += (float64(v.Product.ProductPrice) - ProductOffer(v.ProductID)) * float64(v.Quantity)
 	}
 	c.JSON(200, gin.H{
-		"discount":discount,
+		"discount":    discount,
 		"TotalAmount": total,
 	})
 }

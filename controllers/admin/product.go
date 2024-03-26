@@ -19,7 +19,7 @@ func Product(c *gin.Context) {
 	for _, v := range product {
 		c.JSON(200, gin.H{
 			"ID":           v.ID,
-			"Product Name": v.ProductName,
+			"ProductName": v.ProductName,
 			"Category":     v.CategoryId,
 			"Quantity":     v.Quantity,
 			"Prize":        v.ProductPrice,

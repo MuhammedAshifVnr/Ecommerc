@@ -1,6 +1,8 @@
 package jwt
 
 import (
+	"ecom/database"
+	"ecom/helper"
 	"net/http"
 	"time"
 
@@ -18,7 +20,7 @@ type Claims struct {
 	jwt.StandardClaims
 }
 
-func GenerateToken(role string, email string, id uint,name string) (string, error) {
+func GenerateToken(role string, email string, id uint, name string) (string, error) {
 	claims := Claims{
 		id,
 		email,
@@ -40,6 +42,7 @@ func AuthMiddleware(role string) gin.HandlerFunc {
 			c.Abort()
 			return
 		}
+
 		token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(t *jwt.Token) (interface{}, error) { return Jwtkey, nil })
 		if err != nil || !token.Valid {
 			c.JSON(http.StatusUnauthorized, gin.H{"erorr": "Invalid or expired token."})
@@ -55,10 +58,17 @@ func AuthMiddleware(role string) gin.HandlerFunc {
 			c.Abort()
 			return
 		}
+		var user database.User
+		helper.DB.Where("id=?", claims.UserID).First(&user)
+		if user.Status == "Block" {
+			c.JSON(http.StatusForbidden, gin.H{"error": "Blocked User."})
+			c.Abort()
+			return
+		}
 		c.Set("userID", claims.UserID)
 		c.Set("useremail", claims.UserMail)
 		c.Set("role", claims.Role)
-		c.Set("username",claims.UserName)
+		c.Set("username", claims.UserName)
 		c.Next()
 	}
 }

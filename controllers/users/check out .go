@@ -117,6 +117,7 @@ func Testcheckout(c *gin.Context) {
 		helper.DB.Create(&payment)
 		tx.Commit()
 		helper.DB.Model(&database.Order{}).Where("id=?", orderID).Update("payment_id", paymentOrder["id"])
+		helper.DB.Where("user_id=?", userId).Delete(&database.Cart{})
 		c.JSON(http.StatusOK, gin.H{
 			"message":   "Order Placed Successfully.",
 			"Amount":    totalAmount,
@@ -124,6 +125,7 @@ func Testcheckout(c *gin.Context) {
 		})
 	} else if order.PaymentMethod == "COD" {
 		tx.Commit()
+		helper.DB.Where("user_id=?", userId).Delete(&database.Cart{})
 		c.JSON(http.StatusOK, gin.H{
 			"message": "Order Placed Successfully. Product Get Soon",
 			"Amount":  totalAmount,
@@ -135,6 +137,7 @@ func Testcheckout(c *gin.Context) {
 			wallet.Amount -= totalAmount
 			helper.DB.Save(&wallet)
 			tx.Commit()
+			helper.DB.Where("user_id=?", userId).Delete(&database.Cart{})
 			c.JSON(http.StatusOK, gin.H{
 				"message": "Order Placed Successfully.",
 				"Amount":  totalAmount,
@@ -147,8 +150,6 @@ func Testcheckout(c *gin.Context) {
 		}
 
 	}
-
-	//=========must implement after checkout cartitems delete======
 
 }
 
@@ -172,15 +173,15 @@ func OrderDetils(c *gin.Context) {
 	id := c.Param("ID")
 	helper.DB.Preload("Order").Preload("Product").Preload("Order.Coupon").Preload("Order.Address").Where("id=?", id).Find(&orders)
 	c.JSON(200, gin.H{
-		"Product":          orders.Product.ProductName,
-		"Amount":           orders.Amount,
-		"Coupon":           orders.Order.Coupon.Code,
-		"Status":           orders.Status,
-		"Payment Method":   orders.Order.PaymentMethod,
-		"Order Confirmed":  orders.CreatedAt,
-		"Status Updated":   orders.UpdatedAt,
-		"Quantity":         orders.Quantity,
-		"Shipping Address": orders.Order.Address.ID,
+		"Product":         orders.Product.ProductName,
+		"Amount":          orders.Amount,
+		"Coupon":          orders.Order.Coupon.Code,
+		"Status":          orders.Status,
+		"PaymentMethod":   orders.Order.PaymentMethod,
+		"OrderConfirmed":  orders.CreatedAt,
+		"StatusUpdated":   orders.UpdatedAt,
+		"Quantity":        orders.Quantity,
+		"ShippingAddress": orders.Order.Address.ID,
 	})
 }
 
@@ -233,7 +234,7 @@ func CancelOrder(c *gin.Context) {
 		helper.DB.Model(&orderItem.Order).Updates(&orderItem.Order)
 		helper.DB.Save(&orderItem)
 	}
-	c.JSON(200, "Order Cancelled.")
+	c.JSON(200, gin.H{"Massage": "Order Cancelled."})
 
 }
 

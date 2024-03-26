@@ -1,8 +1,8 @@
 package routes
 
 import (
-	"ecom/jwt"
 	"ecom/controllers/users"
+	"ecom/jwt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -42,16 +42,15 @@ func UserRouters(r *gin.RouterGroup) {
 	r.PATCH("/order/:ID", jwt.AuthMiddleware(UserRole), users.CancelOrder)
 
 	r.GET("/whislist", jwt.AuthMiddleware(UserRole), users.Whislist)
-	r.POST("/whislist/:ID",jwt.AuthMiddleware(UserRole),users.AddWhislist)
-	r.DELETE("/whislist/:ID",jwt.AuthMiddleware(UserRole),users.DeleteWhislist)
+	r.POST("/whislist/:ID", jwt.AuthMiddleware(UserRole), users.AddWhislist)
+	r.DELETE("/whislist/:ID", jwt.AuthMiddleware(UserRole), users.DeleteWhislist)
 
-	r.GET("/payment",func (c *gin.Context)  {
-		c.HTML(200,"payment.html",nil)
+	r.GET("/payment", func(c *gin.Context) {
+		c.HTML(200, "payment.html", nil)
 	})
-	r.POST("/razorpay-payment",users.HandleRazorpayPayment)
-	
+	r.POST("/razorpay-payment", users.HandleRazorpayPayment)
 
-	r.GET("/search-product", jwt.AuthMiddleware(UserRole), users.SeaechProduct)
+	r.GET("/search-product", users.SeaechProduct)
 
 	r.GET("/logout", users.Logout)
 }
