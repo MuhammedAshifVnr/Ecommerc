@@ -2,7 +2,7 @@ package routes
 
 import (
 	"ecom/controllers/users"
-	"ecom/jwt"
+	"ecom/middleware"
 
 	"github.com/gin-gonic/gin"
 )
@@ -22,28 +22,28 @@ func UserRouters(r *gin.RouterGroup) {
 
 	r.GET("/home", users.Homepage)
 	r.GET("/productDetail/:ID", users.ProductDetail)
-	r.GET("/profile", jwt.AuthMiddleware(UserRole), users.Profile)
-	r.PATCH("/profile", jwt.AuthMiddleware(UserRole), users.EditeProfile)
+	r.GET("/profile", middleware.AuthMiddleware(UserRole), users.Profile)
+	r.PATCH("/profile", middleware.AuthMiddleware(UserRole), users.EditeProfile)
 
-	r.GET("/address", jwt.AuthMiddleware(UserRole), users.Address)
-	r.POST("/address", jwt.AuthMiddleware(UserRole), users.AddAddress)
-	r.PUT("/address/:ID", jwt.AuthMiddleware(UserRole), users.AddressEdit)
-	r.DELETE("/address/:ID", jwt.AuthMiddleware(UserRole), users.AddressDelete)
+	r.GET("/address", middleware.AuthMiddleware(UserRole), users.Address)
+	r.POST("/address", middleware.AuthMiddleware(UserRole), users.AddAddress)
+	r.PUT("/address/:ID", middleware.AuthMiddleware(UserRole), users.AddressEdit)
+	r.DELETE("/address/:ID", middleware.AuthMiddleware(UserRole), users.AddressDelete)
 
-	r.GET("/cart", jwt.AuthMiddleware(UserRole), users.Cart)
-	r.POST("/cart/:ID", jwt.AuthMiddleware(UserRole), users.AddCart)
-	r.PATCH("/cart/:ID", jwt.AuthMiddleware(UserRole), users.CartQuantity)
-	r.DELETE("/cart/:ID", jwt.AuthMiddleware(UserRole), users.CartDelete)
-	r.POST("/checkout", jwt.AuthMiddleware(UserRole), users.Testcheckout)
-	r.POST("/review/:ID", jwt.AuthMiddleware(UserRole), users.CreatReview)
+	r.GET("/cart", middleware.AuthMiddleware(UserRole), users.Cart)
+	r.POST("/cart/:ID", middleware.AuthMiddleware(UserRole), users.AddCart)
+	r.PATCH("/cart/:ID", middleware.AuthMiddleware(UserRole), users.CartQuantity)
+	r.DELETE("/cart/:ID", middleware.AuthMiddleware(UserRole), users.CartDelete)
+	r.POST("/checkout", middleware.AuthMiddleware(UserRole), users.Testcheckout)
+	r.POST("/review/:ID", middleware.AuthMiddleware(UserRole), users.CreatReview)
 
-	r.GET("/order", jwt.AuthMiddleware(UserRole), users.Order)
-	r.GET("/order-item/:ID", jwt.AuthMiddleware(UserRole), users.OrderDetils)
-	r.PATCH("/order/:ID", jwt.AuthMiddleware(UserRole), users.CancelOrder)
+	r.GET("/order", middleware.AuthMiddleware(UserRole), users.Order)
+	r.GET("/order-item/:ID", middleware.AuthMiddleware(UserRole), users.OrderDetils)
+	r.PATCH("/order/:ID", middleware.AuthMiddleware(UserRole), users.CancelOrder)
 
-	r.GET("/whislist", jwt.AuthMiddleware(UserRole), users.Whislist)
-	r.POST("/whislist/:ID", jwt.AuthMiddleware(UserRole), users.AddWhislist)
-	r.DELETE("/whislist/:ID", jwt.AuthMiddleware(UserRole), users.DeleteWhislist)
+	r.GET("/whislist", middleware.AuthMiddleware(UserRole), users.Whislist)
+	r.POST("/whislist/:ID", middleware.AuthMiddleware(UserRole), users.AddWhislist)
+	r.DELETE("/whislist/:ID", middleware.AuthMiddleware(UserRole), users.DeleteWhislist)
 
 	r.GET("/payment", func(c *gin.Context) {
 		c.HTML(200, "payment.html", nil)
