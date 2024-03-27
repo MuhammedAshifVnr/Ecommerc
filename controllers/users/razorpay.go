@@ -10,12 +10,10 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
-	"github.com/razorpay/razorpay-go"
 )
-
-var razorpayClient = razorpay.NewClient("rzp_test_ZW342DjmlVWLMO", "H8uZz3CTyagwZqO53aorSUj6")
 
 func HandleRazorpayPayment(c *gin.Context) {
 	var respons map[string]string
@@ -23,25 +21,25 @@ func HandleRazorpayPayment(c *gin.Context) {
 		fmt.Println("error:", err)
 		return
 	}
-	err:=RazorPaymentVerification(respons["razorpay_signature"],respons["razorpay_order_id"],respons["razorpay_payment_id"])
-	if err!=nil{
-		fmt.Println("eroooooor:",err)
+	err := RazorPaymentVerification(respons["razorpay_signature"], respons["razorpay_order_id"], respons["razorpay_payment_id"])
+	if err != nil {
+		fmt.Println("eroooooor:", err)
 		return
-	}else{
+	} else {
 		fmt.Println("Payment Done.")
 	}
 	fmt.Println(respons)
-	payment:=database.Transactions{
+	payment := database.Transactions{
 		PaymentID: respons["razorpay_payment_id"],
-		Status: "Success",
+		Status:    "Success",
 	}
-	helper.DB.Where("order_id=?",respons["razorpay_order_id"]).Updates(&payment)
+	helper.DB.Where("order_id=?", respons["razorpay_order_id"]).Updates(&payment)
 	c.JSON(http.StatusOK, gin.H{"message": "Payment response received successfully"})
 }
 
 func RazorPaymentVerification(sign, orderId, paymentId string) error {
 	signature := sign
-	secret := "H8uZz3CTyagwZqO53aorSUj6"
+	secret := os.Getenv("RAZORPAY_SECRET_ID")
 	data := orderId + "|" + paymentId
 	h := hmac.New(sha256.New, []byte(secret))
 	_, err := h.Write([]byte(data))

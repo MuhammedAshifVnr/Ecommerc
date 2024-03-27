@@ -6,9 +6,11 @@ import (
 	"ecom/helper"
 	"fmt"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/razorpay/razorpay-go"
 )
 
 func Testcheckout(c *gin.Context) {
@@ -96,7 +98,8 @@ func Testcheckout(c *gin.Context) {
 	tx.Model(&database.Order{}).Where("id=?", orderID).Update("amount", totalAmount)
 
 	if order.PaymentMethod == "ONLINE" {
-		paymentOrder, err := razorpayClient.Order.Create(map[string]interface{}{
+		RazorpayClient := razorpay.NewClient(os.Getenv("RAZORPAY_ID"), os.Getenv("RAZORPAY_SECRET_ID"))
+		paymentOrder, err := RazorpayClient.Order.Create(map[string]interface{}{
 			"amount":   totalAmount * 100,
 			"currency": "INR",
 			"receipt":  strconv.Itoa(int(orderID)),

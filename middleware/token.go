@@ -36,7 +36,12 @@ func GenerateToken(role string, email string, id uint, name string) (string, err
 
 func AuthMiddleware(role string) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		tokenString := c.GetHeader("Authorization")
+		tokenString ,err:= c.Cookie("accessToken")
+		if err!=nil{
+			c.JSON(401,err)
+			c.Abort()
+			return
+		}
 		if tokenString == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{"erorr": "Unauthorized"})
 			c.Abort()
