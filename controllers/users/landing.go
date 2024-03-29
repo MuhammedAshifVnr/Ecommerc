@@ -10,21 +10,24 @@ import (
 func Homepage(c *gin.Context) {
 	var find []database.Product
 
-	helper.DB.Preload("Category").Find(&find)
+	helper.DB.Preload("Category").Preload("Offers").Find(&find)
 
-	for _, v := range find {
-		var rating []database.Review
-		helper.DB.Where("product_id=?", v.ID).Find(&rating)
-		avg := AvgRating(rating)
-		discount := ProductOffer(v.ID)
-		c.JSON(200, gin.H{
-			"Name":     v.ProductName,
-			"Prize":    v.ProductPrice - discount,
-			"Category": v.Category.Name,
-			"Rating":   avg,
-			"ID":       v.ID,
-		})
-	}
+	// for _, v := range find {
+	// 	var rating []database.Review
+	// 	helper.DB.Where("product_id=?", v.ID).Find(&rating)
+	// 	avg := AvgRating(rating)
+	// 	discount := ProductOffer(v.ID)
+	// 	c.JSON(200, gin.H{
+	// 		"Name":     v.ProductName,
+	// 		"Prize":    v.ProductPrice - discount,
+	// 		"Category": v.Category.Name,
+	// 		"Rating":   avg,
+	// 		"ID":       v.ID,
+	// 	})
+	// }
+	c.JSON(200,gin.H{
+		"Products":find,
+	})
 }
 
 func ProductDetail(c *gin.Context) {

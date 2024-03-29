@@ -25,6 +25,7 @@ type Product struct {
 	Status       string         `gorm:"default:Active"`
 	ImageUrls    pq.StringArray `gorm:"type:text[]"`
 	Category     Category
+	Offers       Offers
 }
 
 type Category struct {
@@ -47,7 +48,6 @@ type Review struct {
 type Offers struct {
 	gorm.Model
 	ProductID  uint
-	Product    Product
 	Percentage float64
 	Expirey    time.Time
 }

@@ -53,4 +53,7 @@ func UserRouters(r *gin.RouterGroup) {
 	r.GET("/search-product", users.SeaechProduct)
 
 	r.GET("/logout", users.Logout)
+
+
+	r.GET("/invoice/:ID",middleware.AuthMiddleware(UserRole),users.GenerateInvoice)
 }

@@ -16,12 +16,12 @@ func AddCart(c *gin.Context) {
 	userId := c.GetUint("userID")
 	helper.DB.Where("product_id=? AND user_id=?", id, userId).First(&cart)
 	if cart.ID != 0 {
-		c.JSON(400, "Item alredy in cart.")
+		c.JSON(400, gin.H{"Message": "Item alredy in cart."})
 		return
 	}
 	helper.DB.Where("id=?", id).First(&product)
 	if product.Quantity == 0 {
-		c.JSON(400, "Product out of stock")
+		c.JSON(400, gin.H{"Message": "Product out of stock"})
 		return
 	}
 	cart = database.Cart{
@@ -30,23 +30,12 @@ func AddCart(c *gin.Context) {
 		Quantity:  1,
 	}
 	helper.DB.Create(&cart)
-	c.JSON(200, "added to cart.")
+	c.JSON(200, gin.H{"Message": "added to cart."})
 }
 
 func Cart(c *gin.Context) {
 	var cart []database.Cart
-	helper.DB.Preload("Product").Where("user_id=?", c.GetUint("userID")).Find(&cart)
-	for _, v := range cart {
-		discount := ProductOffer(v.ProductID)
-		c.JSON(200, gin.H{
-			"ID":       v.ID,
-			"Product":  v.Product.ProductName,
-			"Prize":    v.Product.ProductPrice - discount,
-			"Image":    v.Product.ImageUrls,
-			"Qty":      v.Quantity,
-			"Discount": ProductOffer(v.ProductID),
-		})
-	}
+	helper.DB.Preload("Product.Offers").Where("user_id=?", c.GetUint("userID")).Find(&cart)
 	var total float64
 	var discount float64
 	for _, v := range cart {
@@ -54,7 +43,8 @@ func Cart(c *gin.Context) {
 		total += (float64(v.Product.ProductPrice) - ProductOffer(v.ProductID)) * float64(v.Quantity)
 	}
 	c.JSON(200, gin.H{
-		"discount":    discount,
+		"Cart":        cart,
+		"Discount":    discount,
 		"TotalAmount": total,
 	})
 }
