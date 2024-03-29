@@ -127,6 +127,14 @@ func Testcheckout(c *gin.Context) {
 			"PaymentID": paymentOrder["id"],
 		})
 	} else if order.PaymentMethod == "COD" {
+		if totalAmount >= 1000 {
+			tx.Rollback()
+			c.JSON(404, gin.H{
+				"Error":   "COD not available for this order",
+				"Massege": "Choose any another payment menthod.",
+			})
+			return
+		}
 		tx.Commit()
 		helper.DB.Where("user_id=?", userId).Delete(&database.Cart{})
 		c.JSON(http.StatusOK, gin.H{
@@ -157,35 +165,18 @@ func Testcheckout(c *gin.Context) {
 }
 
 func Order(c *gin.Context) {
-	var orders []database.OrderItems
-	userId := c.GetUint("userID")
-	helper.DB.Preload("Order", "user_id=?", userId).Preload("Product").Find(&orders)
-	for _, order := range orders {
-		c.JSON(200, gin.H{
-			"ID":            order.ID,
-			"ProductID":     order.Product.ID,
-			"Product":       order.Product.ProductName,
-			"OrderID":       order.Order.ID,
-			"PaymentMethod": order.Order.PaymentMethod,
-		})
-	}
+	var orders []database.Order
+	userID := c.GetUint("userID")
+	helper.DB.Where("user_id=?", userID).Find(&orders)
+
+	c.JSON(200, gin.H{"Orders": orders})
 }
 
 func OrderDetils(c *gin.Context) {
 	var orders database.OrderItems
 	id := c.Param("ID")
-	helper.DB.Preload("Order").Preload("Product").Preload("Order.Coupon").Preload("Order.Address").Where("id=?", id).Find(&orders)
-	c.JSON(200, gin.H{
-		"Product":         orders.Product.ProductName,
-		"Amount":          orders.Amount,
-		"Coupon":          orders.Order.Coupon.Code,
-		"Status":          orders.Status,
-		"PaymentMethod":   orders.Order.PaymentMethod,
-		"OrderConfirmed":  orders.CreatedAt,
-		"StatusUpdated":   orders.UpdatedAt,
-		"Quantity":        orders.Quantity,
-		"ShippingAddress": orders.Order.Address.ID,
-	})
+	helper.DB.Preload("Product").Preload("Order.Coupon").Preload("Order.Address").Where("order_id=?", id).Find(&orders)
+	c.JSON(200, gin.H{"Items": orders})
 }
 
 func CancelOrder(c *gin.Context) {

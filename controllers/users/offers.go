@@ -3,6 +3,7 @@ package users
 import (
 	"ecom/database"
 	"ecom/helper"
+	"math"
 )
 
 func ProductOffer(id interface{}) float64 {
@@ -11,5 +12,6 @@ func ProductOffer(id interface{}) float64 {
 		return 0
 	}
 	result := (offer.ProductPrice / 100) * offer.Offers.Percentage
-	return result
+	return math.Round(result*100) / 100
+
 }

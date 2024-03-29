@@ -17,6 +17,7 @@ func init() {
 func main() {
 	router := gin.Default()
 	router.LoadHTMLGlob("temp/*")
+	
 	store := cookie.NewStore([]byte("secret"))
 	router.Use(sessions.Sessions("mysession", store))
 

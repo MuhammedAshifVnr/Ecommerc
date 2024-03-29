@@ -13,12 +13,20 @@ import (
 func GenerateInvoice(c *gin.Context) {
 	userId := c.GetUint("userID")
 	ID := c.Param("ID")
+
 	var user database.User
 	var items []database.OrderItems
 	helper.DB.Where("id=?", userId).First(&user)
 	helper.DB.Preload("Product").Preload("Order").Where("order_id=? AND status!=?", ID, "Cancelled").Find(&items)
 	var order database.Order
 	helper.DB.Preload("Coupon").Preload("Address").Where("id=?", ID).First(&order)
+
+	for _, val := range items {
+		if val.Status != "Delivered" {
+			c.JSON(401, gin.H{"error": "Products not Delivered."})
+			return
+		}
+	}
 
 	pdf := gofpdf.New("P", "mm", "A4", "")
 	pdf.AddPage()
@@ -71,16 +79,16 @@ func GenerateInvoice(c *gin.Context) {
 
 	pdf.Ln(5)
 	pdf.SetFont("Arial", "B", 12)
-	pdf.CellFormat(140, 10, "Sub-Total:", "", 0, "R", false, 0, "")
+	pdf.CellFormat(150, 10, "Sub-Total:", "", 0, "R", false, 0, "")
 	pdf.Cell(140, 10, fmt.Sprintf("%.2f", order.Amount+order.Coupon.Amount))
 	pdf.Ln(5)
 
 	discount := order.Coupon.Amount
-	pdf.CellFormat(140, 10, "Discount:", "", 0, "R", false, 0, "")
+	pdf.CellFormat(150, 10, "Discount:", "", 0, "R", false, 0, "")
 	pdf.Cell(140, 10, fmt.Sprintf("%.2f", discount))
 	pdf.Ln(5)
 
-	pdf.CellFormat(140, 10, "Grand Total:", "", 0, "R", false, 0, "")
+	pdf.CellFormat(150, 10, "Grand Total:", "", 0, "R", false, 0, "")
 	pdf.Cell(140, 10, fmt.Sprintf("%.2f", order.Amount))
 
 	pdfPath := "/home/ashif/sales/invoce.pdf"

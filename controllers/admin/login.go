@@ -6,6 +6,7 @@ import (
 	"ecom/middleware"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -30,6 +31,7 @@ func AdminLogin(c *gin.Context) {
 		if err != nil {
 			fmt.Println("TOken cant generate.")
 		}
+		c.SetCookie("accessToken", token, int((time.Hour * 24).Seconds()), "/", "localhost", false, true)
 		fmt.Println(token)
 		c.JSON(200, gin.H{
 			"massege": "Successfuly logined",
