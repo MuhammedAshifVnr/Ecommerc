@@ -61,6 +61,7 @@ type Order struct {
 	CouponID      uint `gorm:"default:4"`
 	Coupon        Coupon
 	Amount        float64
+	DliveryCharge int
 	PaymentID     string
 }
 
@@ -92,10 +93,9 @@ type Transactions struct {
 	Status    string
 }
 
-type Wallet struct{
+type Wallet struct {
 	gorm.Model
 	UserID uint
-	User User
+	User   User
 	Amount float64
-	
 }

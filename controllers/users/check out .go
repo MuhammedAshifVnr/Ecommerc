@@ -94,6 +94,11 @@ func Testcheckout(c *gin.Context) {
 		return
 	}
 	totalAmount -= coupon.Amount
+	
+	if totalAmount <= 1500 {
+		totalAmount += 40
+		tx.Model(&database.Order{}).Where("id=?", orderID).Update("dlivery_charge", 40)
+	}
 
 	tx.Model(&database.Order{}).Where("id=?", orderID).Update("amount", totalAmount)
 

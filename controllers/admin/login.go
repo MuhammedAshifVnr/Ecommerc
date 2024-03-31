@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
 
@@ -31,7 +30,7 @@ func AdminLogin(c *gin.Context) {
 		if err != nil {
 			fmt.Println("TOken cant generate.")
 		}
-		c.SetCookie("accessToken", token, int((time.Hour * 24).Seconds()), "/", "localhost", false, true)
+		c.SetCookie("admin", token, int((time.Hour * 24).Seconds()), "/", "localhost", false, true)
 		fmt.Println(token)
 		c.JSON(200, gin.H{
 			"massege": "Successfuly logined",
@@ -81,13 +80,6 @@ func HomePage(c *gin.Context) {
 
 func Logout(c *gin.Context) {
 
-	session := sessions.Default(c)
-	check := session.Get("admin")
-	if check == nil {
-		c.JSON(200, "Not logged in")
-	} else {
-		session.Delete("admin")
-		session.Save()
-		c.JSON(200, "Successfully logout.")
-	}
+	c.SetCookie("admin", "", -1, "/", "localhost", false, true)
+	c.JSON(200, "Successfully logout.")
 }

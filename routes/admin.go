@@ -42,6 +42,8 @@ func AdminRouters(r *gin.RouterGroup) {
 	r.PATCH("/order/update/:ID", middleware.AuthMiddleware(AdminRole), admin.UpdateOrder)
 	r.PATCH("/order/:ID", middleware.AuthMiddleware(AdminRole), users.CancelOrder)
 
+	r.GET("/sort",admin.ProductSorting)
+
 	r.GET("/salesreport",admin.DownloadReport)
 	//helper
 	r.PATCH("/recover/:ID", admin.DeleteRecovery)

@@ -27,21 +27,21 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	token, err := middleware.GenerateToken(Find.Role, Find.Email, Find.ID,Find.Name)
+	token, err := middleware.GenerateToken(Find.Role, Find.Email, Find.ID, Find.Name)
 	if err != nil {
 		fmt.Println("TOken cant generate.")
 	}
-	c.SetCookie("accessToken", token, int((time.Hour * 24).Seconds()), "/", "localhost", false, true)
+	c.SetCookie("user", token, int((time.Hour * 24).Seconds()), "/", "localhost", false, true)
 	fmt.Println(token)
 	c.JSON(200, gin.H{
-		"messe":"successfully Login.",
-		"token":token,
+		"messe": "successfully Login.",
+		"token": token,
 	})
 
 }
 
 func Logout(c *gin.Context) {
-	c.SetCookie("accessToken", "", -1, "/", "localhost", false, true)
+	c.SetCookie("user", "", -1, "/", "localhost", false, true)
 	c.JSON(200, "Successfully logout.")
 
 }

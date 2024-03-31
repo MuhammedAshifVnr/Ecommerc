@@ -36,9 +36,9 @@ func GenerateToken(role string, email string, id uint, name string) (string, err
 
 func AuthMiddleware(role string) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		tokenString ,err:= c.Cookie("accessToken")
+		tokenString ,err:= c.Cookie(role)
 		if err!=nil{
-			c.JSON(401,err)
+			c.JSON(401,gin.H{"Massage":"Token not found go to the login"})
 			c.Abort()
 			return
 		}

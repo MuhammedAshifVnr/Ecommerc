@@ -38,13 +38,23 @@ func Cart(c *gin.Context) {
 	helper.DB.Preload("Product.Offers").Where("user_id=?", c.GetUint("userID")).Find(&cart)
 	var total float64
 	var discount float64
+	if len(cart)==0{
+		c.JSON(401,gin.H{"Massege":"Cart is empty"})
+		return
+	}
 	for _, v := range cart {
 		discount += ProductOffer(v.ProductID)
 		total += (float64(v.Product.ProductPrice) - ProductOffer(v.ProductID)) * float64(v.Quantity)
 	}
+	var delvery int
+	if total<=1500{
+		delvery=40
+		total+=float64(delvery)
+	}
 	c.JSON(200, gin.H{
 		"Cart":        cart,
 		"Discount":    discount,
+		"DliveryCharge":delvery,
 		"TotalAmount": total,
 	})
 }

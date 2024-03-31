@@ -17,9 +17,15 @@ func GenerateInvoice(c *gin.Context) {
 	var user database.User
 	var items []database.OrderItems
 	helper.DB.Where("id=?", userId).First(&user)
-	helper.DB.Preload("Product").Preload("Order").Where("order_id=? AND status!=?", ID, "Cancelled").Find(&items)
+	if err:=helper.DB.Preload("Product").Preload("Order").Where("order_id=? AND status!=?", ID, "Cancelled").Find(&items);err.Error!=nil{
+		c.JSON(401,gin.H{"Erorr":"Order not found"})
+		return
+	}
 	var order database.Order
-	helper.DB.Preload("Coupon").Preload("Address").Where("id=?", ID).First(&order)
+	if err:=helper.DB.Preload("Coupon").Preload("Address").Where("id=?", ID).First(&order);err.Error!=nil{
+		c.JSON(401,gin.H{"Erorr":"Order not found"})
+		return
+	}
 
 	for _, val := range items {
 		if val.Status != "Delivered" {
