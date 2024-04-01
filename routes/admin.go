@@ -48,4 +48,8 @@ func AdminRouters(r *gin.RouterGroup) {
 	//helper
 	r.PATCH("/recover/:ID", admin.DeleteRecovery)
 
+	r.POST("/offer/:ID",admin.OfferAdding)
+	r.GET("/offer",admin.OfferListing)
+	r.DELETE("/offer/:ID",admin.OfferDeleting)
+
 }

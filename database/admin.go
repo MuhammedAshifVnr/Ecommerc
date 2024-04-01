@@ -47,7 +47,7 @@ type Review struct {
 
 type Offers struct {
 	gorm.Model
-	ProductID  uint
-	Percentage float64
-	Expirey    time.Time
+	ProductID  uint      `json:"id"`
+	Percentage float64   `json:"percentage"`
+	Expirey    time.Time `json:"expirey"`
 }
