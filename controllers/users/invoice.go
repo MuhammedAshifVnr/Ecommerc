@@ -13,7 +13,6 @@ import (
 func GenerateInvoice(c *gin.Context) {
 	userId := c.GetUint("userID")
 	ID := c.Param("ID")
-
 	var user database.User
 	var items []database.OrderItems
 	helper.DB.Where("id=?", userId).First(&user)
@@ -86,12 +85,16 @@ func GenerateInvoice(c *gin.Context) {
 	pdf.Ln(5)
 	pdf.SetFont("Arial", "B", 12)
 	pdf.CellFormat(150, 10, "Sub-Total:", "", 0, "R", false, 0, "")
-	pdf.Cell(140, 10, fmt.Sprintf("%.2f", order.Amount+order.Coupon.Amount))
+	pdf.Cell(140, 10, fmt.Sprintf("%.2f", order.Amount+order.Coupon.Amount-float64(order.DliveryCharge)))
 	pdf.Ln(5)
 
 	discount := order.Coupon.Amount
 	pdf.CellFormat(150, 10, "Discount:", "", 0, "R", false, 0, "")
-	pdf.Cell(140, 10, fmt.Sprintf("%.2f", discount))
+	pdf.Cell(140, 10, fmt.Sprintf("-"+"%.2f", discount))
+	pdf.Ln(5)
+
+	pdf.CellFormat(150, 10, "Delivery Charge:", "", 0, "R", false, 0, "")
+	pdf.Cell(140, 10, fmt.Sprintf("%d", order.DliveryCharge))
 	pdf.Ln(5)
 
 	pdf.CellFormat(150, 10, "Grand Total:", "", 0, "R", false, 0, "")

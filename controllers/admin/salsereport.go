@@ -80,7 +80,7 @@ func generatePDF(orders []database.OrderItems, totalAmount float64, count int) (
 	pdf.Cell(40, 10, "Sales Report")
 	pdf.Ln(10)
 
-	headers := []string{"Order ID", "Customer", "Payment Method", "Total Amount", "Status", "Order Date"}
+	headers := []string{"Order ID", "Payment Method", "Total Amount", "Status", "Order Date"}
 	for _, header := range headers {
 		pdf.Cell(32, 10, header)
 	}
@@ -88,7 +88,6 @@ func generatePDF(orders []database.OrderItems, totalAmount float64, count int) (
 
 	for _, order := range orders {
 		pdf.Cell(32, 8, strconv.Itoa(int(order.OrderID)))
-		pdf.Cell(32, 8, order.Order.User.Email)
 		pdf.Cell(32, 8, order.Order.PaymentMethod)
 		pdf.Cell(32, 8, strconv.FormatFloat(order.Amount, 'f', 2, 64))
 		pdf.Cell(32, 8, order.Status)

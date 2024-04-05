@@ -56,4 +56,7 @@ func UserRouters(r *gin.RouterGroup) {
 
 
 	r.GET("/invoice/:ID",middleware.AuthMiddleware(UserRole),users.GenerateInvoice)
+
+	r.GET("/auth/google/login",users.HandleGoogleLogin)
+	r.GET("/auth/google/callback", users.HandleGoogleCallback)
 }

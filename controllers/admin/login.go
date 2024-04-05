@@ -58,9 +58,9 @@ func HomePage(c *gin.Context) {
 	}
 	c.JSON(http.StatusSeeOther, gin.H{
 		"Message":           "Welcome " + admin,
-		"TotalSaleAmount: ": total,
-		"ConmformCount: ":   conform,
-		"CancelledOrders: ": cancel,
+		"TotalSaleAmount ": total,
+		"ConmformCount ":   conform,
+		"CancelledOrders ": cancel,
 	})
 
 	// for _, order := range orders {
