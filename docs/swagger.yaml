@@ -60,4 +60,25 @@ paths:
       summary: Orders Listing
       tags:
       - Admin
+  /admin/order/update/{ID}:
+    patch:
+      consumes:
+      - application/json
+      description: Update the status of an order by ID
+      operationId: update-order
+      parameters:
+      - description: Order ID
+        in: path
+        name: ID
+        required: true
+        type: integer
+      - description: New status of the order
+        in: formData
+        name: status
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Update order status
 swagger: "2.0"

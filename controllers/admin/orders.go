@@ -30,9 +30,18 @@ func Orders(c *gin.Context) {
 			"Status":      order.Status,
 		})
 	}
-	c.JSON(http.StatusOK, gin.H{"data": response})
+	c.JSON(http.StatusOK, gin.H{
+		"Status": http.StatusOK,
+		"Data":   response,
+	})
 }
 
+// AdminLogin godoc
+// @Summary      Orders Listing
+// @Description  All Orders  are listed here
+// @Tags Admin
+// @Produce      json
+// @Router       /admin/order [get]
 func UpdateOrder(c *gin.Context) {
 	id := c.Param("ID")
 	var order database.OrderItems
