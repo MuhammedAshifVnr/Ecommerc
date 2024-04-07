@@ -1,0 +1,93 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "This is a sample Gin API with Swagger documentation.",
+        "title": "ECOM",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/",
+    "paths": {
+        "/admin/home": {
+            "get": {
+                "description": "after login show this page",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Admin Home Page",
+                "responses": {}
+            }
+        },
+        "/admin/login": {
+            "post": {
+                "description": "Login an admin user with username and password",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Login an admin user",
+                "operationId": "admin-login",
+                "parameters": [
+                    {
+                        "description": "Admin login details",
+                        "name": "admin",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/database.Logging"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/admin/logout": {
+            "get": {
+                "description": "Logout an admin clearing the cookie",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Logout an admin user",
+                "responses": {}
+            }
+        },
+        "/admin/order": {
+            "get": {
+                "description": "All Orders  are listed here",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Orders Listing",
+                "responses": {}
+            }
+        }
+    },
+    "definitions": {
+        "database.Logging": {
+            "type": "object",
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "useremail": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

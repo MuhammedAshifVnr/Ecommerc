@@ -1,0 +1,63 @@
+basePath: /
+definitions:
+  database.Logging:
+    properties:
+      password:
+        type: string
+      useremail:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: This is a sample Gin API with Swagger documentation.
+  title: ECOM
+  version: "1.0"
+paths:
+  /admin/home:
+    get:
+      description: after login show this page
+      produces:
+      - application/json
+      responses: {}
+      summary: Admin Home Page
+      tags:
+      - Admin
+  /admin/login:
+    post:
+      consumes:
+      - application/json
+      description: Login an admin user with username and password
+      operationId: admin-login
+      parameters:
+      - description: Admin login details
+        in: body
+        name: admin
+        required: true
+        schema:
+          $ref: '#/definitions/database.Logging'
+      produces:
+      - application/json
+      responses: {}
+      summary: Login an admin user
+      tags:
+      - Admin
+  /admin/logout:
+    get:
+      description: Logout an admin clearing the cookie
+      produces:
+      - application/json
+      responses: {}
+      summary: Logout an admin user
+      tags:
+      - Admin
+  /admin/order:
+    get:
+      description: All Orders  are listed here
+      produces:
+      - application/json
+      responses: {}
+      summary: Orders Listing
+      tags:
+      - Admin
+swagger: "2.0"

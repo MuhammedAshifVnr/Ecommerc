@@ -12,9 +12,17 @@ import (
 )
 
 // ..................................login post......................
-
+// AdminLogin godoc
+// @Summary      Login an admin user
+// @Description  Login an admin user with username and password
+// @Tags Admin
+// @ID           admin-login
+// @Accept       json
+// @Produce      json
+// @Param        admin body database.Logging true "Admin login details"
+// @Router       /admin/login [post]
 func AdminLogin(c *gin.Context) {
-	var find database.Admin
+	var find database.Logging
 	var AdminTable database.Admin
 	if err := c.ShouldBindJSON(&find); err != nil {
 		c.JSON(http.StatusSeeOther, "Something went wrong.")
@@ -23,12 +31,13 @@ func AdminLogin(c *gin.Context) {
 	helper.DB.First(&AdminTable, "Username=?", find.Username)
 
 	if AdminTable.Password != find.Password {
-		c.JSON(http.StatusSeeOther, "Invalid Username or Password")
+		c.JSON(401, "Invalid Username or Password")
 		fmt.Println(AdminTable, find)
 	} else {
 		token, err := middleware.GenerateToken("admin", AdminTable.Username, AdminTable.ID, AdminTable.Name)
 		if err != nil {
-			fmt.Println("TOken cant generate.")
+			c.JSON(403, gin.H{"error": "failed to create token"})
+			return
 		}
 		c.SetCookie("admin", token, int((time.Hour * 24).Seconds()), "/", "localhost", false, true)
 		fmt.Println(token)
@@ -41,7 +50,12 @@ func AdminLogin(c *gin.Context) {
 }
 
 //..............after login show this page list of users.........................
-
+// AdminLogin godoc
+// @Summary      Admin Home Page
+// @Description  after login show this page 
+// @Tags Admin
+// @Produce      json
+// @Router       /admin/home [get]
 func HomePage(c *gin.Context) {
 	admin := c.GetString("username")
 	var orders []database.OrderItems
@@ -57,27 +71,20 @@ func HomePage(c *gin.Context) {
 		total += order.Amount
 	}
 	c.JSON(http.StatusSeeOther, gin.H{
-		"Message":           "Welcome " + admin,
+		"Message":          "Welcome " + admin,
 		"TotalSaleAmount ": total,
 		"ConmformCount ":   conform,
 		"CancelledOrders ": cancel,
 	})
 
-	// for _, order := range orders {
-	// 	c.JSON(303, gin.H{
-	// 		"ProductName":   order.Product.ProductName,
-	// 		"OrderID":       order.OrderID,
-	// 		"Amount":        order.Amount,
-	// 		"ID":            order.ID,
-	// 		"PaymentMethod": order.Order.PaymentMethod,
-	// 		"UserName":      order.Order.User.Email,
-	// 		"Quantity":      order.Quantity,
-	// 		"Status":        order.Status,
-	// 	})
-	// }
-
 }
 
+// AdminLogin godoc
+// @Summary      Logout an admin user
+// @Description  Logout an admin clearing the cookie
+// @Tags Admin
+// @Produce      json
+// @Router       /admin/logout [get]
 func Logout(c *gin.Context) {
 
 	c.SetCookie("admin", "", -1, "/", "localhost", false, true)
