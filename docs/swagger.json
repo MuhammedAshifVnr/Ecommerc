@@ -78,14 +78,14 @@
         },
         "/admin/order/update/{ID}": {
             "patch": {
-                "description": "Update the status of an order by ID",
+                "description": "Update the status of an order by ID.",
                 "consumes": [
-                    "application/json"
+                    "multipart/form-data"
                 ],
                 "produces": [
                     "application/json"
                 ],
-                "summary": "Update order status",
+                "summary": "Update Order Status",
                 "operationId": "update-order",
                 "parameters": [
                     {
@@ -97,13 +97,111 @@
                     },
                     {
                         "type": "string",
-                        "description": "New status of the order",
+                        "description": "New status",
                         "name": "status",
                         "in": "formData",
                         "required": true
                     }
                 ],
                 "responses": {}
+            }
+        },
+        "/admin/product": {
+            "get": {
+                "description": "get all product list by admin",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Admin can see the listed  products in ecommerce website",
+                "responses": {}
+            },
+            "post": {
+                "description": "Add a new product to the database",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Add a new product",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Name of the product",
+                        "name": "product",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Name of the category the product belongs to",
+                        "name": "category",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Quantity of the product",
+                        "name": "quantity",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "Price of the product",
+                        "name": "price",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Size of the product",
+                        "name": "size",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Description of the product",
+                        "name": "description",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "file"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "Images of the product (upload at least 3 images)",
+                        "name": "images",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Product added successfully",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
             }
         }
     },

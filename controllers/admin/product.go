@@ -3,6 +3,7 @@ package admin
 import (
 	"ecom/database"
 	"ecom/helper"
+	"fmt"
 	"net/http"
 	"path/filepath"
 	"strconv"
@@ -12,28 +13,56 @@ import (
 )
 
 // ..................................product showing................................
+// AdminLogin godoc
+// @Summary      Admin can see the listed  products in ecommerce website
+// @Description  get all product list by admin
+// @Tags Admin
+// @Produce      json
+// @Router       /admin/product [get]
 func Product(c *gin.Context) {
 	var product []database.Product
 	helper.DB.Order("ID").Find(&product)
-
+	var products []gin.H
 	for _, v := range product {
-		c.JSON(200, gin.H{
-			"ID":           v.ID,
+		products = append(products, gin.H{
+			"ID":          v.ID,
 			"ProductName": v.ProductName,
-			"Category":     v.CategoryId,
-			"Quantity":     v.Quantity,
-			"Prize":        v.ProductPrice,
-			"Status":       v.Status,
-			"images":       v.ImageUrls,
-			"Stock":        v.Quantity,
+			"Category":    v.CategoryId,
+			"Quantity":    v.Quantity,
+			"Prize":       v.ProductPrice,
+			"Status":      v.Status,
+			"images":      v.ImageUrls,
+			"Stock":       v.Quantity,
 		})
 	}
-
+	c.JSON(http.StatusOK, gin.H{
+		"Status": http.StatusOK,
+		"Data":   products,
+	})
 }
 
+// @Summary Add a new product
+// @Description Add a new product to the database
+// @Accept multipart/form-data
+// @Produce json
+// @Param product formData string true "Name of the product"
+// @Param category formData string true "Name of the category the product belongs to"
+// @Param quantity formData integer true "Quantity of the product"
+// @Param price formData number true "Price of the product"
+// @Param size formData integer true "Size of the product"
+// @Param description formData string true "Description of the product"
+// @Param images formData []file true "Images of the product (upload at least 3 images)"
+// @Success 200 {string} string "Product added successfully"
+// @Failure 400 {string} string "Bad Request"
+// @Failure 500 {string} string "Internal Server Error"
+// @Router /admin/product [post]
 func AddProduct(c *gin.Context) {
 	var cate database.Category
-
+	if c.Request.FormValue("category") == "" {
+		fmt.Println("adfg", c.Request.FormValue("category"))
+		c.JSON(401, "error")
+		return
+	}
 	helper.DB.Where("name=?", c.Request.FormValue("category")).First(&cate)
 
 	quantit, _ := strconv.Atoi(c.Request.FormValue("quantity"))
@@ -141,4 +170,3 @@ func Delete(c *gin.Context) {
 	c.JSON(http.StatusSeeOther, "Successfylly Deleted.")
 
 }
-

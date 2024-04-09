@@ -36,12 +36,15 @@ func Orders(c *gin.Context) {
 	})
 }
 
-// AdminLogin godoc
-// @Summary      Orders Listing
-// @Description  All Orders  are listed here
-// @Tags Admin
-// @Produce      json
-// @Router       /admin/order [get]
+// UpdateOrder updates the status of an order.
+// @Summary Update Order Status
+// @Description Update the status of an order by ID.
+// @ID update-order
+// @Accept multipart/form-data
+// @Produce json
+// @Param ID path int true "Order ID"
+// @Param status formData string true "New status"
+// @Router       /admin/order/update/{ID} [patch]
 func UpdateOrder(c *gin.Context) {
 	id := c.Param("ID")
 	var order database.OrderItems

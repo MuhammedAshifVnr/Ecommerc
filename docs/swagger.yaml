@@ -63,8 +63,8 @@ paths:
   /admin/order/update/{ID}:
     patch:
       consumes:
-      - application/json
-      description: Update the status of an order by ID
+      - multipart/form-data
+      description: Update the status of an order by ID.
       operationId: update-order
       parameters:
       - description: Order ID
@@ -72,7 +72,7 @@ paths:
         name: ID
         required: true
         type: integer
-      - description: New status of the order
+      - description: New status
         in: formData
         name: status
         required: true
@@ -80,5 +80,73 @@ paths:
       produces:
       - application/json
       responses: {}
-      summary: Update order status
+      summary: Update Order Status
+  /admin/product:
+    get:
+      description: get all product list by admin
+      produces:
+      - application/json
+      responses: {}
+      summary: Admin can see the listed  products in ecommerce website
+      tags:
+      - Admin
+    post:
+      consumes:
+      - multipart/form-data
+      description: Add a new product to the database
+      parameters:
+      - description: Name of the product
+        in: formData
+        name: product
+        required: true
+        type: string
+      - description: Name of the category the product belongs to
+        in: formData
+        name: category
+        required: true
+        type: string
+      - description: Quantity of the product
+        in: formData
+        name: quantity
+        required: true
+        type: integer
+      - description: Price of the product
+        in: formData
+        name: price
+        required: true
+        type: number
+      - description: Size of the product
+        in: formData
+        name: size
+        required: true
+        type: integer
+      - description: Description of the product
+        in: formData
+        name: description
+        required: true
+        type: string
+      - collectionFormat: csv
+        description: Images of the product (upload at least 3 images)
+        in: formData
+        items:
+          type: file
+        name: images
+        required: true
+        type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Product added successfully
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Add a new product
 swagger: "2.0"
