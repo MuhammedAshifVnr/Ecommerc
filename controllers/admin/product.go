@@ -3,7 +3,6 @@ package admin
 import (
 	"ecom/database"
 	"ecom/helper"
-	"fmt"
 	"net/http"
 	"path/filepath"
 	"strconv"
@@ -16,7 +15,7 @@ import (
 // AdminLogin godoc
 // @Summary      Admin can see the listed  products in ecommerce website
 // @Description  get all product list by admin
-// @Tags Admin
+// @Tags Admin-Product
 // @Produce      json
 // @Router       /admin/product [get]
 func Product(c *gin.Context) {
@@ -45,6 +44,7 @@ func Product(c *gin.Context) {
 // @Description Add a new product to the database
 // @Accept multipart/form-data
 // @Produce json
+// @Tags Admin-Product
 // @Param product formData string true "Name of the product"
 // @Param category formData string true "Name of the category the product belongs to"
 // @Param quantity formData integer true "Quantity of the product"
@@ -58,11 +58,7 @@ func Product(c *gin.Context) {
 // @Router /admin/product [post]
 func AddProduct(c *gin.Context) {
 	var cate database.Category
-	if c.Request.FormValue("category") == "" {
-		fmt.Println("adfg", c.Request.FormValue("category"))
-		c.JSON(401, "error")
-		return
-	}
+
 	helper.DB.Where("name=?", c.Request.FormValue("category")).First(&cate)
 
 	quantit, _ := strconv.Atoi(c.Request.FormValue("quantity"))
@@ -70,13 +66,13 @@ func AddProduct(c *gin.Context) {
 	size, _ := strconv.Atoi(c.Request.FormValue("size"))
 
 	if cate.ID == 0 {
-		c.JSON(http.StatusBadRequest, "Category not fount.")
+		c.JSON(http.StatusBadRequest, gin.H{"Status": http.StatusBadRequest, "Massage": "Category not fount"})
 		return
 	}
 
 	files := c.Request.MultipartForm.File["images"]
 	if len(files) < 3 {
-		c.JSON(http.StatusBadRequest, "Please upload at least 3 images")
+		c.JSON(http.StatusBadRequest, gin.H{"Status": http.StatusBadRequest, "Massage": "Please upload at least 3 images"})
 		return
 	}
 	var imgs []string
@@ -103,10 +99,25 @@ func AddProduct(c *gin.Context) {
 		})
 		return
 	}
-	c.JSON(200, "File uploaded successfully")
+	c.JSON(200, gin.H{"Status": 200, "Massage": "File uploaded successfully"})
 }
 
 // ......................................admin can edit the product..............................
+// @Summary Edit a product
+// @Description Edits a product by its ID, including updating its category, quantity, price, size, description, and images
+// @ID edit-product
+// @Accept multipart/form-data
+// @Tags Admin-Product
+// @Produce json
+// @Param ID path int true "Product ID"
+// @Param product formData string true "Name of the product"
+// @Param category formData string true "Product category name"
+// @Param quantity formData  string true "Product quantity"
+// @Param price formData string true "Product price"
+// @Param size formData string true "Product size"
+// @Param description formData string true "Product description"
+// @Param images formData  []file true "Product images"
+// @Router /admin/product/{ID} [put]
 func EditProdect(c *gin.Context) {
 	id := c.Param("ID")
 	var cate database.Category
@@ -121,13 +132,13 @@ func EditProdect(c *gin.Context) {
 	size, _ := strconv.Atoi(c.Request.FormValue("size"))
 
 	if cate.ID == 0 {
-		c.JSON(http.StatusBadRequest, "Category not fount.")
+		c.JSON(http.StatusBadRequest, gin.H{"Status": 400, "Massage": "Category not fount"})
 		return
 	}
 
 	files := c.Request.MultipartForm.File["images"]
 	if len(files) < 3 {
-		c.JSON(http.StatusBadRequest, "Please upload at least 3 images")
+		c.JSON(http.StatusBadRequest, gin.H{"Status": http.StatusBadRequest, "Massage": "Please upload at least 3 images"})
 		return
 	}
 	var imgs []string
@@ -154,10 +165,18 @@ func EditProdect(c *gin.Context) {
 		})
 		return
 	}
-	c.JSON(200, "File uploaded successfully")
+	c.JSON(200, gin.H{"Status": 200, "Massage": "File uploaded successfully"})
 }
 
 // .................................admin can delete product............................
+// @Summary Delete a product
+// @Description Deletes a product by its ID
+// @ID delete-product
+// @Tags Admin-Product
+// @Accept json
+// @Produce json
+// @Param ID path int true "Product ID"
+// @Router /admin/product/{ID} [delete]
 func Delete(c *gin.Context) {
 	var delete database.Product
 
@@ -165,8 +184,8 @@ func Delete(c *gin.Context) {
 
 	helper.DB.Where("id=?", id).First(&delete)
 	if err := helper.DB.Where("id=?", id).Delete(&delete); err.Error != nil {
-		c.JSON(http.StatusSeeOther, "You Can't Delete this Product.")
+		c.JSON(http.StatusBadRequest, gin.H{"Massage":"You Can't Delete this Product"})
 	}
-	c.JSON(http.StatusSeeOther, "Successfylly Deleted.")
+	c.JSON(http.StatusOK, gin.H{"Status": http.StatusOK, "Massage": "Successfylly Deleted"})
 
 }

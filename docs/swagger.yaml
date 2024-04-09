@@ -89,7 +89,7 @@ paths:
       responses: {}
       summary: Admin can see the listed  products in ecommerce website
       tags:
-      - Admin
+      - Admin-Product
     post:
       consumes:
       - multipart/form-data
@@ -149,4 +149,80 @@ paths:
           schema:
             type: string
       summary: Add a new product
+      tags:
+      - Admin-Product
+  /admin/product/{ID}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a product by its ID
+      operationId: delete-product
+      parameters:
+      - description: Product ID
+        in: path
+        name: ID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      summary: Delete a product
+      tags:
+      - Admin-Product
+    put:
+      consumes:
+      - multipart/form-data
+      description: Edits a product by its ID, including updating its category, quantity,
+        price, size, description, and images
+      operationId: edit-product
+      parameters:
+      - description: Product ID
+        in: path
+        name: ID
+        required: true
+        type: integer
+      - description: Name of the product
+        in: formData
+        name: product
+        required: true
+        type: string
+      - description: Product category name
+        in: formData
+        name: category
+        required: true
+        type: string
+      - description: Product quantity
+        in: formData
+        name: quantity
+        required: true
+        type: string
+      - description: Product price
+        in: formData
+        name: price
+        required: true
+        type: string
+      - description: Product size
+        in: formData
+        name: size
+        required: true
+        type: string
+      - description: Product description
+        in: formData
+        name: description
+        required: true
+        type: string
+      - collectionFormat: csv
+        description: Product images
+        in: formData
+        items:
+          type: file
+        name: images
+        required: true
+        type: array
+      produces:
+      - application/json
+      responses: {}
+      summary: Edit a product
+      tags:
+      - Admin-Product
 swagger: "2.0"
