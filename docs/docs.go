@@ -315,6 +315,39 @@ const docTemplate = `{
                 ],
                 "responses": {}
             }
+        },
+        "/admin/users": {
+            "get": {
+                "description": "Admin can see the users in ecommerce website",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin-Users"
+                ],
+                "responses": {}
+            }
+        },
+        "/admin/users/{ID}": {
+            "patch": {
+                "description": "Admin can Block and Unblock the users in ecommerce website",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin-Users"
+                ],
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "User ID",
+                        "name": "ID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
         }
     },
     "definitions": {

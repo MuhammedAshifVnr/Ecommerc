@@ -225,4 +225,26 @@ paths:
       summary: Edit a product
       tags:
       - Admin-Product
+  /admin/users:
+    get:
+      description: Admin can see the users in ecommerce website
+      produces:
+      - application/json
+      responses: {}
+      tags:
+      - Admin-Users
+  /admin/users/{ID}:
+    patch:
+      description: Admin can Block and Unblock the users in ecommerce website
+      parameters:
+      - description: User ID
+        in: path
+        name: ID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      tags:
+      - Admin-Users
 swagger: "2.0"
