@@ -20,7 +20,7 @@ func ProductSorting(c *gin.Context) {
 	var items []database.Product
 	query := helper.DB
 	if sort == "" {
-		c.JSON(401, gin.H{"Erorr": "give any value"})
+		c.JSON(401, gin.H{"code": 401, "status": "Failed", "message": "give any value"})
 		return
 	}
 	switch sort {
