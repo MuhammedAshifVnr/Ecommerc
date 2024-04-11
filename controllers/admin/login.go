@@ -42,17 +42,17 @@ func AdminLogin(c *gin.Context) {
 		c.SetCookie("admin", token, int((time.Hour * 24).Seconds()), "/", "localhost", false, true)
 		fmt.Println(token)
 		c.JSON(200, gin.H{
-			"massege": "Successfuly logined",
+			"Message": "Successfuly logined",
 			"token":   token,
 		})
 
 	}
 }
 
-//..............after login show this page list of users.........................
+// ..............after login show this page list of users.........................
 // AdminLogin godoc
 // @Summary      Admin Home Page
-// @Description  after login show this page 
+// @Description  after login show this page
 // @Tags Admin
 // @Produce      json
 // @Router       /admin/home [get]
@@ -88,5 +88,5 @@ func HomePage(c *gin.Context) {
 func Logout(c *gin.Context) {
 
 	c.SetCookie("admin", "", -1, "/", "localhost", false, true)
-	c.JSON(200, "Successfully logout.")
+	c.JSON(200, gin.H{"Message": "Successfully logout."})
 }

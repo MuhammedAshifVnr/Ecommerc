@@ -1,5 +1,12 @@
 basePath: /
 definitions:
+  database.CategoryData:
+    properties:
+      catagory:
+        type: string
+      description:
+        type: string
+    type: object
   database.Logging:
     properties:
       password:
@@ -14,6 +21,90 @@ info:
   title: ECOM
   version: "1.0"
 paths:
+  /admin/category:
+    get:
+      description: Admin can see the listed  category in ecommerce website
+      produces:
+      - application/json
+      responses: {}
+      summary: get all category list by admin
+      tags:
+      - Admin-Category
+    post:
+      consumes:
+      - application/json
+      description: Add a new category with the provided details
+      operationId: add-category
+      parameters:
+      - description: Category Add
+        in: body
+        name: category
+        required: true
+        schema:
+          $ref: '#/definitions/database.CategoryData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully added.
+          schema:
+            type: string
+        "404":
+          description: Duplicate found.
+          schema:
+            type: string
+      summary: Add a new category
+      tags:
+      - Admin-Category
+  /admin/category/{ID}:
+    delete:
+      description: Deletes a category by ID
+      parameters:
+      - description: Category ID
+        in: path
+        name: ID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Delete a category
+      tags:
+      - Admin-Category
+    patch:
+      description: Admin can Block the listed  category in ecommerce website
+      parameters:
+      - description: User ID
+        in: path
+        name: ID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Admin can block the category
+      tags:
+      - Admin-Category
+    put:
+      description: Admin can edit the listed  category in ecommerce website
+      parameters:
+      - description: User ID
+        in: path
+        name: ID
+        required: true
+        type: string
+      - description: Category Edit
+        in: body
+        name: Form
+        required: true
+        schema:
+          $ref: '#/definitions/database.CategoryData'
+      produces:
+      - application/json
+      responses: {}
+      summary: Admin can edit the category
+      tags:
+      - Admin-Category
   /admin/home:
     get:
       description: after login show this page

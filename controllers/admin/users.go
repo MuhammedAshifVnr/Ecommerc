@@ -45,11 +45,11 @@ func UserStatus(c *gin.Context) {
 	if find.Status == "Active" {
 		find.Status = "Block"
 		helper.DB.Save(&find)
-		c.JSON(http.StatusAccepted, gin.H{"Massage": "User Blocked"})
+		c.JSON(http.StatusAccepted, gin.H{"Message": "User Blocked"})
 	} else {
 		find.Status = "Active"
 		helper.DB.Save(&find)
-		c.JSON(http.StatusAccepted, gin.H{"Massage": "User Unblocked"})
+		c.JSON(http.StatusAccepted, gin.H{"Message": "User Unblocked"})
 	}
 
 }

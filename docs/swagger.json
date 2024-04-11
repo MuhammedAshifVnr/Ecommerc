@@ -9,6 +9,129 @@
     "host": "localhost:8080",
     "basePath": "/",
     "paths": {
+        "/admin/category": {
+            "get": {
+                "description": "Admin can see the listed  category in ecommerce website",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin-Category"
+                ],
+                "summary": "get all category list by admin",
+                "responses": {}
+            },
+            "post": {
+                "description": "Add a new category with the provided details",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin-Category"
+                ],
+                "summary": "Add a new category",
+                "operationId": "add-category",
+                "parameters": [
+                    {
+                        "description": "Category Add",
+                        "name": "category",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/database.CategoryData"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully added.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Duplicate found.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/category/{ID}": {
+            "put": {
+                "description": "Admin can edit the listed  category in ecommerce website",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin-Category"
+                ],
+                "summary": "Admin can edit the category",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "ID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Category Edit",
+                        "name": "Form",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/database.CategoryData"
+                        }
+                    }
+                ],
+                "responses": {}
+            },
+            "delete": {
+                "description": "Deletes a category by ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin-Category"
+                ],
+                "summary": "Delete a category",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Category ID",
+                        "name": "ID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            },
+            "patch": {
+                "description": "Admin can Block the listed  category in ecommerce website",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin-Category"
+                ],
+                "summary": "Admin can block the category",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "ID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/admin/home": {
             "get": {
                 "description": "after login show this page",
@@ -345,6 +468,17 @@
         }
     },
     "definitions": {
+        "database.CategoryData": {
+            "type": "object",
+            "properties": {
+                "catagory": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                }
+            }
+        },
         "database.Logging": {
             "type": "object",
             "properties": {

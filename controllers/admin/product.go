@@ -66,13 +66,13 @@ func AddProduct(c *gin.Context) {
 	size, _ := strconv.Atoi(c.Request.FormValue("size"))
 
 	if cate.ID == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"Status": http.StatusBadRequest, "Massage": "Category not fount"})
+		c.JSON(http.StatusBadRequest, gin.H{"Status": http.StatusBadRequest, "Message": "Category not fount"})
 		return
 	}
 
 	files := c.Request.MultipartForm.File["images"]
 	if len(files) < 3 {
-		c.JSON(http.StatusBadRequest, gin.H{"Status": http.StatusBadRequest, "Massage": "Please upload at least 3 images"})
+		c.JSON(http.StatusBadRequest, gin.H{"Status": http.StatusBadRequest, "Message": "Please upload at least 3 images"})
 		return
 	}
 	var imgs []string
@@ -99,7 +99,7 @@ func AddProduct(c *gin.Context) {
 		})
 		return
 	}
-	c.JSON(200, gin.H{"Status": 200, "Massage": "File uploaded successfully"})
+	c.JSON(200, gin.H{"Status": 200, "Message": "File uploaded successfully"})
 }
 
 // ......................................admin can edit the product..............................
@@ -132,13 +132,13 @@ func EditProdect(c *gin.Context) {
 	size, _ := strconv.Atoi(c.Request.FormValue("size"))
 
 	if cate.ID == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"Status": 400, "Massage": "Category not fount"})
+		c.JSON(http.StatusBadRequest, gin.H{"Status": 400, "Message": "Category not fount"})
 		return
 	}
 
 	files := c.Request.MultipartForm.File["images"]
 	if len(files) < 3 {
-		c.JSON(http.StatusBadRequest, gin.H{"Status": http.StatusBadRequest, "Massage": "Please upload at least 3 images"})
+		c.JSON(http.StatusBadRequest, gin.H{"Status": http.StatusBadRequest, "Message": "Please upload at least 3 images"})
 		return
 	}
 	var imgs []string
@@ -165,7 +165,7 @@ func EditProdect(c *gin.Context) {
 		})
 		return
 	}
-	c.JSON(200, gin.H{"Status": 200, "Massage": "File uploaded successfully"})
+	c.JSON(200, gin.H{"Status": 200, "Message": "File uploaded successfully"})
 }
 
 // .................................admin can delete product............................
@@ -184,8 +184,8 @@ func Delete(c *gin.Context) {
 
 	helper.DB.Where("id=?", id).First(&delete)
 	if err := helper.DB.Where("id=?", id).Delete(&delete); err.Error != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"Massage":"You Can't Delete this Product"})
+		c.JSON(http.StatusBadRequest, gin.H{"Message":"You Can't Delete this Product"})
 	}
-	c.JSON(http.StatusOK, gin.H{"Status": http.StatusOK, "Massage": "Successfylly Deleted"})
+	c.JSON(http.StatusOK, gin.H{"Status": http.StatusOK, "Message": "Successfylly Deleted"})
 
 }
