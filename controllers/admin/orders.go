@@ -8,7 +8,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// AdminLogin godoc
 // @Summary      Orders Listing
 // @Description  All Orders  are listed here
 // @Tags Admin-Order

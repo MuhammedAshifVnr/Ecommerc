@@ -533,6 +533,27 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/admin/sort": {
+            "get": {
+                "description": "Admin can find best product and category",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Finding best product and category",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "sort",
+                        "name": "sort",
+                        "in": "query"
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/admin/users": {
             "get": {
                 "description": "Admin can see the users in ecommerce website",

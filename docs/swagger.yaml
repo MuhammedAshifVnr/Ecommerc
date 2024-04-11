@@ -378,6 +378,20 @@ paths:
       summary: Edit a product
       tags:
       - Admin-Product
+  /admin/sort:
+    get:
+      description: Admin can find best product and category
+      parameters:
+      - description: sort
+        in: query
+        name: sort
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Finding best product and category
+      tags:
+      - Admin
   /admin/users:
     get:
       description: Admin can see the users in ecommerce website
