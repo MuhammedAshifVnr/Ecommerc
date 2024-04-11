@@ -26,8 +26,10 @@ func Category(c *gin.Context) {
 		})
 	}
 	c.JSON(200, gin.H{
-		"Category": category,
-		"Status":   200,
+		"code":     200,
+		"message":  "Successfully fetched.",
+		"category": category,
+		"status":   "Success",
 	})
 }
 
@@ -49,10 +51,10 @@ func AddCategory(c *gin.Context) {
 		Name:        cat.Name,
 		Description: cat.Description,
 	}); err.Error != nil {
-		c.JSON(404, gin.H{"Message": "Duplicate found."})
+		c.JSON(404, gin.H{"code": 404, "status": "Failed", "message": "Duplicate found."})
 		return
 	}
-	c.JSON(200, gin.H{"Message": "Successfully added."})
+	c.JSON(200, gin.H{"code": 202, "status": "Success", "message": "Successfully added."})
 
 }
 
@@ -70,10 +72,10 @@ func EditCategory(c *gin.Context) {
 
 	c.ShouldBindJSON(&find)
 	if err := helper.DB.Where("id=?", id).Updates(&find); err.Error != nil {
-		c.JSON(404, "error")
+		c.JSON(400, gin.H{"code": 400, "status": "Failed", "message": "error"})
 		return
 	}
-	c.JSON(200, gin.H{"Message": "Successfully Edited."})
+	c.JSON(200, gin.H{"code": 200, "status": "Success", "message": "Successfully Edited."})
 }
 
 // @Summary      Admin can block the category
@@ -95,14 +97,14 @@ func BlockCategory(c *gin.Context) {
 		for _, v := range prod {
 			helper.DB.Model(&v).Update("status", "Block")
 		}
-		c.JSON(401, gin.H{"Message": "Successfully Blocked.", "Status": 401})
+		c.JSON(401, gin.H{"code": 401, "status": "Success", "message": "Successfully Blocked."})
 	} else {
 		helper.DB.Model(&find).Update("Status", "Active")
 		helper.DB.Where("category_id=?", id).Find(&prod)
 		for _, v := range prod {
 			helper.DB.Model(&v).Update("status", "Active")
 		}
-		c.JSON(200, gin.H{"Message": "Successfully Actived.", "Status": 200})
+		c.JSON(200, gin.H{"code": 200, "status": "Success", "message": "Successfully Actived."})
 	}
 }
 
@@ -120,17 +122,17 @@ func DeleteCategory(c *gin.Context) {
 
 	helper.DB.Where("CategoryId=?", id).First(&prod)
 	if prod.ID != 0 {
-		c.JSON(422, gin.H{"Message": "You can't Delete this Category.Some Product Listed this Category.", "Status": 422})
+		c.JSON(422, gin.H{"code": 422, "status": "Failed", "message": "You can't Delete this Category.Some Product Listed this Category."})
 		return
 	}
 
 	helper.DB.Where("id=?", id).Delete(&find)
-	c.JSON(200, gin.H{"Message": "Category deleted Successfully.", "Status": 200})
+	c.JSON(200, gin.H{"code": 200, "status": "Success", "message": "Category deleted Successfully."})
 }
 
 func DeleteRecovery(c *gin.Context) {
 	id := c.Param("ID")
 
 	helper.DB.Unscoped().Model(&database.Category{}).Where("id=?", id).Update("deleted_at", nil)
-	c.JSON(200, "Recoverd.")
+	c.JSON(200, gin.H{"code": 200, "status": "Success", "message": "Recoverd."})
 }

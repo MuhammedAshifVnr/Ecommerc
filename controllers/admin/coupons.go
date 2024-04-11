@@ -29,7 +29,7 @@ func AddCoupons(c *gin.Context) {
 	}
 
 	helper.DB.Create(&coupon)
-	c.JSON(200, gin.H{"Message": "Coupen added.", "Status": 200})
+	c.JSON(200, gin.H{"code": 200, "status": "Success", "message": "Coupen added."})
 }
 
 // @Sammary Admin can get all coupons
@@ -51,7 +51,7 @@ func Coupons(c *gin.Context) {
 			"Amount":       v.Amount,
 		})
 	}
-	c.JSON(200, gin.H{"Coupons": list, "Status": 200})
+	c.JSON(200, gin.H{"code": 200, "status": "Success", "Coupons": list})
 }
 
 // @Summary Admin can delete a coupon
@@ -65,5 +65,5 @@ func DeleteCoupon(c *gin.Context) {
 	Id := c.Param("ID")
 
 	helper.DB.Where("id=?", Id).Delete(&database.Coupon{})
-	c.JSON(200, gin.H{"Message": "Coupon deleted."})
+	c.JSON(200, gin.H{"code": 200, "status": "Success", "message": "Coupon deleted."})
 }

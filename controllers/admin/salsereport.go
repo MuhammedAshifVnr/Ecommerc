@@ -12,8 +12,15 @@ import (
 	"github.com/jung-kurt/gofpdf"
 )
 
+// @Summary Download Sales Reoprt
+// @Description Admin can download Sales Reoprt
+// @Tags Admin
+// @Accept  json
+// @Produce  json
+// @Param filter query string true "Filter"
+// @Router /admin/salesreport [get]
 func DownloadReport(c *gin.Context) {
-	filter := c.Request.FormValue("filter")
+	filter := c.Query("filter")
 	var startTime, endTime time.Time
 
 	switch filter {
@@ -35,23 +42,23 @@ func DownloadReport(c *gin.Context) {
 		var err error
 		startTime, err = time.Parse("2006-01-02", startStr)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid start date format. Use YYYY-MM-DD"})
+			c.JSON(http.StatusBadRequest, gin.H{"code": 400, "status": "Failed", "message": "Invalid start date format. Use YYYY-MM-DD"})
 			return
 		}
 		endTime, err = time.Parse("2006-01-02", endStr)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid end date format. Use YYYY-MM-DD"})
+			c.JSON(http.StatusBadRequest, gin.H{"code": 400, "status": "Failed", "message": "Invalid end date format. Use YYYY-MM-DD"})
 			return
 		}
 	default:
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid filter parameter"})
+		c.JSON(http.StatusBadRequest, gin.H{"code": 400, "status": "Failed", "message": "Invalid filter parameter"})
 		return
 	}
 
 	reportData, total, count := generateReportData(startTime, endTime)
 	pdfPath, err := generatePDF(reportData, total, count)
 	if err != nil {
-		c.JSON(500, gin.H{"error": "Failed to generate PDF file"})
+		c.JSON(500, gin.H{"code":500,"status":"Failed","message": "Failed to generate PDF file"})
 		return
 	}
 

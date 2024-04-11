@@ -30,8 +30,9 @@ func Orders(c *gin.Context) {
 		})
 	}
 	c.JSON(http.StatusOK, gin.H{
-		"Status": http.StatusOK,
-		"Data":   response,
+		"code":   http.StatusOK,
+		"status": "success",
+		"data":   response,
 	})
 }
 
@@ -51,14 +52,14 @@ func UpdateOrder(c *gin.Context) {
 	helper.DB.Where("id=?", id).First(&order)
 	if order.Status == "Cancelled" {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"Message": "Order alredy Cancelled",
+			"code": 400, "status": "Failed", "message": "Order alredy Cancelled",
 		})
 		return
 	}
 	order.Status = c.Request.FormValue("status")
 	helper.DB.Save(&order)
 	c.JSON(200, gin.H{
-		"Message": "Order Status Updated",
+		"code": 200, "status": "Success", "message": "Order Status Updated",
 	})
 
 }

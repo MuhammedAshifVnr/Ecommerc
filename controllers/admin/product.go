@@ -35,8 +35,10 @@ func Product(c *gin.Context) {
 		})
 	}
 	c.JSON(http.StatusOK, gin.H{
-		"Status": http.StatusOK,
-		"Data":   products,
+		"code":    200,
+		"status":  "Success",
+		"message": "Listed products",
+		"Data":    products,
 	})
 }
 
@@ -66,20 +68,20 @@ func AddProduct(c *gin.Context) {
 	size, _ := strconv.Atoi(c.Request.FormValue("size"))
 
 	if cate.ID == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"Status": http.StatusBadRequest, "Message": "Category not fount"})
+		c.JSON(http.StatusBadRequest, gin.H{"code": 400, "status": "Failed", "message": "Category not fount"})
 		return
 	}
 
 	files := c.Request.MultipartForm.File["images"]
 	if len(files) < 3 {
-		c.JSON(http.StatusBadRequest, gin.H{"Status": http.StatusBadRequest, "Message": "Please upload at least 3 images"})
+		c.JSON(http.StatusBadRequest, gin.H{"code": 400, "status": "Failed", "message": "Please upload at least 3 images"})
 		return
 	}
 	var imgs []string
 	for _, img := range files {
 		dst := filepath.Join("./assets", img.Filename)
 		if err := c.SaveUploadedFile(img, dst); err != nil {
-			c.JSON(http.StatusBadRequest, err.Error)
+			c.JSON(http.StatusBadRequest, gin.H{"code": 400, "status": "Failed", "message": err.Error})
 			return
 		}
 		imgs = append(imgs, dst)
@@ -95,11 +97,11 @@ func AddProduct(c *gin.Context) {
 	}
 	if err := helper.DB.Create(&datas); err.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error,
+			"code": 400, "status": "Failed", "message": err.Error,
 		})
 		return
 	}
-	c.JSON(200, gin.H{"Status": 200, "Message": "File uploaded successfully"})
+	c.JSON(200, gin.H{"code": 200, "status": "Success", "message": "File uploaded successfully"})
 }
 
 // ......................................admin can edit the product..............................
@@ -132,20 +134,20 @@ func EditProdect(c *gin.Context) {
 	size, _ := strconv.Atoi(c.Request.FormValue("size"))
 
 	if cate.ID == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"Status": 400, "Message": "Category not fount"})
+		c.JSON(http.StatusBadRequest, gin.H{"code": 400, "status": "Failed", "message": "Category not fount"})
 		return
 	}
 
 	files := c.Request.MultipartForm.File["images"]
 	if len(files) < 3 {
-		c.JSON(http.StatusBadRequest, gin.H{"Status": http.StatusBadRequest, "Message": "Please upload at least 3 images"})
+		c.JSON(http.StatusBadRequest, gin.H{"code": 400, "status": "Failed", "message": "Please upload at least 3 images"})
 		return
 	}
 	var imgs []string
 	for _, img := range files {
 		dst := filepath.Join("./assets", img.Filename)
 		if err := c.SaveUploadedFile(img, dst); err != nil {
-			c.JSON(http.StatusBadRequest, err.Error)
+			c.JSON(http.StatusBadRequest, gin.H{"code": 400, "status": "Failed", "message": err.Error})
 			return
 		}
 		imgs = append(imgs, dst)
@@ -161,11 +163,11 @@ func EditProdect(c *gin.Context) {
 	}
 	if err := helper.DB.Model(&database.Product{}).Where("id=?", id).Updates(datas); err.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error,
+			"code": 400, "status": "Failed", "message": err.Error,
 		})
 		return
 	}
-	c.JSON(200, gin.H{"Status": 200, "Message": "File uploaded successfully"})
+	c.JSON(200, gin.H{"code": 200, "status": "Success", "message": "File uploaded successfully"})
 }
 
 // .................................admin can delete product............................
@@ -184,8 +186,8 @@ func Delete(c *gin.Context) {
 
 	helper.DB.Where("id=?", id).First(&delete)
 	if err := helper.DB.Where("id=?", id).Delete(&delete); err.Error != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"Message":"You Can't Delete this Product"})
+		c.JSON(http.StatusBadRequest, gin.H{"code": 400, "status": "Failed", "message": "You Can't Delete this Product"})
 	}
-	c.JSON(http.StatusOK, gin.H{"Status": http.StatusOK, "Message": "Successfylly Deleted"})
+	c.JSON(http.StatusOK, gin.H{"code": 200, "status": "Success", "message": "Successfylly Deleted"})
 
 }

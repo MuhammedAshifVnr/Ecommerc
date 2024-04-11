@@ -283,6 +283,73 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/admin/offer": {
+            "get": {
+                "description": "Product Offer Listing",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin-Offer"
+                ],
+                "summary": "Product Offer Listing",
+                "responses": {}
+            }
+        },
+        "/admin/offer/{ID}": {
+            "post": {
+                "description": "Product Offer Adding",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin-Offer"
+                ],
+                "summary": "Offer Adding",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Product ID",
+                        "name": "ID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Offer",
+                        "name": "offer",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/database.OfferProductData"
+                        }
+                    }
+                ],
+                "responses": {}
+            },
+            "delete": {
+                "description": "Product Offer Deleting",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin-Offer"
+                ],
+                "summary": "Product Offer Deleting",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Product ID",
+                        "name": "ID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/admin/order": {
             "get": {
                 "description": "All Orders  are listed here",
@@ -533,6 +600,31 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/admin/salesreport": {
+            "get": {
+                "description": "Admin can download Sales Reoprt",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Download Sales Reoprt",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Filter",
+                        "name": "filter",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/admin/sort": {
             "get": {
                 "description": "Admin can find best product and category",
@@ -608,6 +700,17 @@ const docTemplate = `{
                 },
                 "useremail": {
                     "type": "string"
+                }
+            }
+        },
+        "database.OfferProductData": {
+            "type": "object",
+            "properties": {
+                "expirey": {
+                    "type": "string"
+                },
+                "percentage": {
+                    "type": "number"
                 }
             }
         }

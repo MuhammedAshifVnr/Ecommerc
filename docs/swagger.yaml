@@ -14,6 +14,13 @@ definitions:
       useremail:
         type: string
     type: object
+  database.OfferProductData:
+    properties:
+      expirey:
+        type: string
+      percentage:
+        type: number
+    type: object
 host: localhost:8080
 info:
   contact: {}
@@ -202,6 +209,52 @@ paths:
       summary: Logout an admin user
       tags:
       - Admin
+  /admin/offer:
+    get:
+      description: Product Offer Listing
+      produces:
+      - application/json
+      responses: {}
+      summary: Product Offer Listing
+      tags:
+      - Admin-Offer
+  /admin/offer/{ID}:
+    delete:
+      description: Product Offer Deleting
+      parameters:
+      - description: Product ID
+        in: path
+        name: ID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      summary: Product Offer Deleting
+      tags:
+      - Admin-Offer
+    post:
+      consumes:
+      - application/json
+      description: Product Offer Adding
+      parameters:
+      - description: Product ID
+        in: path
+        name: ID
+        required: true
+        type: integer
+      - description: Offer
+        in: body
+        name: offer
+        required: true
+        schema:
+          $ref: '#/definitions/database.OfferProductData'
+      produces:
+      - application/json
+      responses: {}
+      summary: Offer Adding
+      tags:
+      - Admin-Offer
   /admin/order:
     get:
       description: All Orders  are listed here
@@ -378,6 +431,23 @@ paths:
       summary: Edit a product
       tags:
       - Admin-Product
+  /admin/salesreport:
+    get:
+      consumes:
+      - application/json
+      description: Admin can download Sales Reoprt
+      parameters:
+      - description: Filter
+        in: query
+        name: filter
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Download Sales Reoprt
+      tags:
+      - Admin
   /admin/sort:
     get:
       description: Admin can find best product and category

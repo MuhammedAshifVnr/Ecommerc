@@ -5,7 +5,6 @@ import (
 	"ecom/helper"
 	"ecom/middleware"
 	"fmt"
-	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -25,24 +24,26 @@ func AdminLogin(c *gin.Context) {
 	var find database.Logging
 	var AdminTable database.Admin
 	if err := c.ShouldBindJSON(&find); err != nil {
-		c.JSON(http.StatusSeeOther, "Something went wrong.")
+		c.JSON(400, gin.H{"code": 400, "status": "Failed", "message": "Something went wrong."})
 	}
 
 	helper.DB.First(&AdminTable, "Username=?", find.Username)
 
 	if AdminTable.Password != find.Password {
-		c.JSON(401, "Invalid Username or Password")
+		c.JSON(400, gin.H{"code": 400, "status": "Failed", "message": "Invalid Username or Password"})
 		fmt.Println(AdminTable, find)
 	} else {
 		token, err := middleware.GenerateToken("admin", AdminTable.Username, AdminTable.ID, AdminTable.Name)
 		if err != nil {
-			c.JSON(403, gin.H{"error": "failed to create token"})
+			c.JSON(403, gin.H{"code": 403, "status": "Failed", "message": "failed to create token"})
 			return
 		}
 		c.SetCookie("admin", token, int((time.Hour * 24).Seconds()), "/", "localhost", false, true)
 		fmt.Println(token)
 		c.JSON(200, gin.H{
-			"Message": "Successfuly logined",
+			"code":    200,
+			"status":  "Success",
+			"message": "Successfuly logined",
 			"token":   token,
 		})
 
@@ -70,7 +71,9 @@ func HomePage(c *gin.Context) {
 		}
 		total += order.Amount
 	}
-	c.JSON(http.StatusSeeOther, gin.H{
+	c.JSON(200, gin.H{
+		"code":             200,
+		"status":           "success",
 		"Message":          "Welcome " + admin,
 		"TotalSaleAmount ": total,
 		"ConmformCount ":   conform,
@@ -88,5 +91,5 @@ func HomePage(c *gin.Context) {
 func Logout(c *gin.Context) {
 
 	c.SetCookie("admin", "", -1, "/", "localhost", false, true)
-	c.JSON(200, gin.H{"Message": "Successfully logout."})
+	c.JSON(200, gin.H{"code": 200, "status": "Success", "message": "Successfully logout."})
 }

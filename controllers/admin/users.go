@@ -26,8 +26,10 @@ func UsersList(c *gin.Context) {
 		})
 	}
 	c.JSON(http.StatusOK, gin.H{
-		"Status": 200,
-		"Users":  users,
+		"code":    200,
+		"message": "Users List",
+		"status":  "Success",
+		"users":   users,
 	})
 }
 
@@ -45,11 +47,11 @@ func UserStatus(c *gin.Context) {
 	if find.Status == "Active" {
 		find.Status = "Block"
 		helper.DB.Save(&find)
-		c.JSON(http.StatusAccepted, gin.H{"Message": "User Blocked"})
+		c.JSON(http.StatusAccepted, gin.H{"code": 202, "status": "Success", "message": "User Blocked"})
 	} else {
 		find.Status = "Active"
 		helper.DB.Save(&find)
-		c.JSON(http.StatusAccepted, gin.H{"Message": "User Unblocked"})
+		c.JSON(http.StatusAccepted, gin.H{"code": 202, "status": "Success", "message": "User Unblocked"})
 	}
 
 }
