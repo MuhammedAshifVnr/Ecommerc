@@ -290,7 +290,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Admin"
+                    "Admin-Order"
                 ],
                 "summary": "Orders Listing",
                 "responses": {}
@@ -304,6 +304,9 @@ const docTemplate = `{
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Admin-Order"
                 ],
                 "summary": "Update Order Status",
                 "operationId": "update-order",

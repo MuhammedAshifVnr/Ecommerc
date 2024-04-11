@@ -11,7 +11,7 @@ import (
 // AdminLogin godoc
 // @Summary      Orders Listing
 // @Description  All Orders  are listed here
-// @Tags Admin
+// @Tags Admin-Order
 // @Produce      json
 // @Router       /admin/order [get]
 func Orders(c *gin.Context) {
@@ -40,6 +40,7 @@ func Orders(c *gin.Context) {
 // @Summary Update Order Status
 // @Description Update the status of an order by ID.
 // @ID update-order
+// @Tags Admin-Order
 // @Accept multipart/form-data
 // @Produce json
 // @Param ID path int true "Order ID"
@@ -51,14 +52,14 @@ func UpdateOrder(c *gin.Context) {
 	helper.DB.Where("id=?", id).First(&order)
 	if order.Status == "Cancelled" {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"massege": "Order alredy Cancelled",
+			"Message": "Order alredy Cancelled",
 		})
 		return
 	}
 	order.Status = c.Request.FormValue("status")
 	helper.DB.Save(&order)
 	c.JSON(200, gin.H{
-		"massege": "Order Status Updated",
+		"Message": "Order Status Updated",
 	})
 
 }

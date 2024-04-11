@@ -210,7 +210,7 @@ paths:
       responses: {}
       summary: Orders Listing
       tags:
-      - Admin
+      - Admin-Order
   /admin/order/update/{ID}:
     patch:
       consumes:
@@ -232,6 +232,8 @@ paths:
       - application/json
       responses: {}
       summary: Update Order Status
+      tags:
+      - Admin-Order
   /admin/product:
     get:
       description: get all product list by admin
