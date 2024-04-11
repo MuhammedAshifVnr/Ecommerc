@@ -138,6 +138,97 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/admin/coupon": {
+            "get": {
+                "description": "Admin side list all the coupons",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin-Coupons"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Coupons",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Admin can add the coupon in ecommerce website",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin-Coupons"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Coupon Code",
+                        "name": "code",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Coupon Amount",
+                        "name": "amount",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Limit Amount",
+                        "name": "limit",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Coupon added",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/coupon/{ID}": {
+            "delete": {
+                "description": "Admin side delete a coupon",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin-Coupons"
+                ],
+                "summary": "Admin can delete a coupon",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Coupon ID",
+                        "name": "ID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Coupon deleted",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/admin/home": {
             "get": {
                 "description": "after login show this page",

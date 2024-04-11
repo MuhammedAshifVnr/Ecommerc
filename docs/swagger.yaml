@@ -105,6 +105,66 @@ paths:
       summary: Admin can edit the category
       tags:
       - Admin-Category
+  /admin/coupon:
+    get:
+      description: Admin side list all the coupons
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Coupons
+          schema:
+            type: string
+      tags:
+      - Admin-Coupons
+    post:
+      consumes:
+      - multipart/form-data
+      description: Admin can add the coupon in ecommerce website
+      parameters:
+      - description: Coupon Code
+        in: formData
+        name: code
+        required: true
+        type: string
+      - description: Coupon Amount
+        in: formData
+        name: amount
+        required: true
+        type: string
+      - description: Limit Amount
+        in: formData
+        name: limit
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Coupon added
+          schema:
+            type: string
+      tags:
+      - Admin-Coupons
+  /admin/coupon/{ID}:
+    delete:
+      description: Admin side delete a coupon
+      parameters:
+      - description: Coupon ID
+        in: path
+        name: ID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Coupon deleted
+          schema:
+            type: string
+      summary: Admin can delete a coupon
+      tags:
+      - Admin-Coupons
   /admin/home:
     get:
       description: after login show this page
