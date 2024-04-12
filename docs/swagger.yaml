@@ -484,4 +484,68 @@ paths:
       responses: {}
       tags:
       - Admin-Users
+  /user/home:
+    get:
+      description: Get All Products
+      produces:
+      - application/json
+      responses: {}
+      summary: Get All Products
+      tags:
+      - User-Product
+  /user/login:
+    post:
+      consumes:
+      - application/json
+      description: Login
+      parameters:
+      - description: Login
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/database.Logging'
+      produces:
+      - application/json
+      responses: {}
+      summary: Login
+      tags:
+      - User
+  /user/logout:
+    get:
+      description: Logout
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+      summary: Logout
+      tags:
+      - User
+  /user/productDetail/{ID}:
+    get:
+      description: Product Detail
+      parameters:
+      - description: Product ID
+        in: path
+        name: ID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Product Detail
+      tags:
+      - User-Product
+  /user/profile:
+    get:
+      description: Get user profile
+      produces:
+      - application/json
+      responses: {}
+      summary: User Profile
+      tags:
+      - User-Profile
 swagger: "2.0"

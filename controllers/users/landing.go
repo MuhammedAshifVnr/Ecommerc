@@ -3,38 +3,52 @@ package users
 import (
 	"ecom/database"
 	"ecom/helper"
+	"math"
 
 	"github.com/gin-gonic/gin"
 )
 
+// @Summary      Get All Products
+// @Description  Get All Products
+// @Tags         User-Product
+// @Produce      json
+// @Router       /user/home [get]
 func Homepage(c *gin.Context) {
 	var find []database.Product
 
 	helper.DB.Preload("Category").Preload("Offers").Find(&find)
+	var product_list []gin.H
+	for _, v := range find {
+		var rating []database.Review
+		helper.DB.Where("product_id=?", v.ID).Find(&rating)
+		avg := AvgRating(rating)
+		discount := ProductOffer(v.ID)
 
-	// for _, v := range find {
-	// 	var rating []database.Review
-	// 	helper.DB.Where("product_id=?", v.ID).Find(&rating)
-	// 	avg := AvgRating(rating)
-	// 	discount := ProductOffer(v.ID)
-	// 	c.JSON(200, gin.H{
-	// 		"Name":     v.ProductName,
-	// 		"Prize":    v.ProductPrice - discount,
-	// 		"Category": v.Category.Name,
-	// 		"Rating":   avg,
-	// 		"ID":       v.ID,
-	// 	})
-	// }
-	c.JSON(200,gin.H{
-		"Products":find,
+		product_list = append(product_list, gin.H{
+			"Name":     v.ProductName,
+			"Prize":    v.ProductPrice - discount,
+			"Category": v.Category.Name,
+			"Rating":   avg,
+			"ID":       v.ID,
+		})
+	}
+	c.JSON(200, gin.H{
+		"code":     200,
+		"status":   "Success",
+		"products": product_list,
 	})
 }
 
+// @Summary Product Detail
+// @Description Product Detail
+// @Tags User-Product
+// @Produce json
+// @Param ID path string true "Product ID"
+// @Router /user/productDetail/{ID} [get]
 func ProductDetail(c *gin.Context) {
 	var find database.Product
 	var stock string
 	var table []database.Product
-	var review database.Review
 
 	id := c.Param("ID")
 	discount := ProductOffer(id)
@@ -50,7 +64,7 @@ func ProductDetail(c *gin.Context) {
 	var rating []database.Review
 	helper.DB.Where("product_id=?", find.ID).Find(&rating)
 	avg := AvgRating(rating)
-	c.JSON(200, gin.H{
+	product := gin.H{
 		"Name":        find.ProductName,
 		"Prize":       find.ProductPrice - discount,
 		"Stock":       stock,
@@ -60,24 +74,34 @@ func ProductDetail(c *gin.Context) {
 		"Images":      find.ImageUrls,
 		"Discount":    discount,
 		"Rating":      avg,
-	})
+	}
+	var ratings []gin.H
 	for _, v := range rating {
-		c.JSON(200, gin.H{
+		ratings = append(ratings, gin.H{
 			"Rating": v.Rating,
 			"Review": v.Comment,
 		})
 	}
-	helper.DB.Where("product_id=?", id).First(&review)
-	c.JSON(200, "Recommend Products")
-	for i := 0; i < len(table); i++ {
-		if find.ID != table[i].ID {
-			c.JSON(200, gin.H{
-				"Image": table[i].ImageUrls,
-				"Name":  table[i].ProductName,
-				"Prize": table[i].ProductPrice,
+
+	var recomend []gin.H
+	for _, v := range table {
+		if find.ID != v.ID {
+			recomend = append(recomend, gin.H{
+				"Image": v.ImageUrls,
+				"Name":  v.ProductName,
+				"Prize": v.ProductPrice,
 			})
 		}
 	}
+	c.JSON(200, gin.H{
+		"code":   200,
+		"status": "success",
+		"data": gin.H{
+			"product":  product,
+			"ratings":  ratings,
+			"recomend": recomend,
+		},
+	})
 }
 
 func AvgRating(ratings []database.Review) float64 {
@@ -88,5 +112,5 @@ func AvgRating(ratings []database.Review) float64 {
 	for _, v := range ratings {
 		avg += v.Rating
 	}
-	return avg / float64(len(ratings))
+	return math.Round((avg/float64(len(ratings)))*100) / 100
 }

@@ -16,3 +16,4 @@ type OfferProductData struct {
 	Percentage float64   `json:"percentage"`
 	Expirey    time.Time `json:"expirey"`
 }
+

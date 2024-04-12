@@ -8,20 +8,30 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// @Summary User Profile
+// @Description Get user profile
+// @Tags User-Profile
+// @Produce  json
+// @Router /user/profile [get]
 func Profile(c *gin.Context) {
 	var user database.User
-	helper.DB.Where("id=?",c.GetUint("userID")).First(&user)
-	c.JSON(200, gin.H{
+	helper.DB.Where("id=?", c.GetUint("userID")).First(&user)
+	profile := gin.H{
 		"Name":          user.Name,
 		"Email":         user.Email,
 		"Mobile Number": user.Mobile,
 		"Gender":        user.Gender,
+	}
+	c.JSON(200, gin.H{
+		"code":   200,
+		"status": "success",
+		"data":   profile,
 	})
 }
 
 func AddAddress(c *gin.Context) {
 	var address database.Address
-	userId:=c.GetUint("userID")
+	userId := c.GetUint("userID")
 	c.ShouldBindJSON(&address)
 	address.UserId = userId
 	helper.DB.Create(&address)
@@ -31,17 +41,17 @@ func AddAddress(c *gin.Context) {
 
 func Address(c *gin.Context) {
 	var add []database.Address
-	userId:=c.GetUint("userID")
+	userId := c.GetUint("userID")
 	helper.DB.Where("user_id=?", userId).Find(&add)
 
 	for _, v := range add {
 		c.JSON(200, gin.H{
-			"City":v.City,
-			"ID":v.ID,
-			"State":v.State,
-			"Street":v.Street,
-			"Type":v.Type,
-			"Zip":v.ZipCode,
+			"City":   v.City,
+			"ID":     v.ID,
+			"State":  v.State,
+			"Street": v.Street,
+			"Type":   v.Type,
+			"Zip":    v.ZipCode,
 		})
 	}
 }
@@ -49,7 +59,7 @@ func Address(c *gin.Context) {
 func AddressEdit(c *gin.Context) {
 	id := c.Param("ID")
 	var add database.Address
-	userId:=c.GetUint("userID")
+	userId := c.GetUint("userID")
 	c.ShouldBindJSON(&add)
 	add.UserId = userId
 	helper.DB.Model(&database.Address{}).Where("id=?", id).Updates(add)
@@ -64,11 +74,11 @@ func AddressDelete(c *gin.Context) {
 
 func EditeProfile(c *gin.Context) {
 	var edite database.User
-	userId:=c.GetUint("userID")
+	userId := c.GetUint("userID")
 	helper.DB.Where("id=?", userId).First(&edite)
 	c.ShouldBindJSON(&edite)
-	if err:=helper.DB.Save(&edite);err.Error !=nil{
-		c.JSON(400,"can't save")
+	if err := helper.DB.Save(&edite); err.Error != nil {
+		c.JSON(400, "can't save")
 	}
 	c.JSON(200, "Updated.")
 }

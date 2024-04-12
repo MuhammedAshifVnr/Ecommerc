@@ -18,23 +18,29 @@ import (
 )
 
 var (
-	googleOauthConfig *oauth2.Config
-	oauthStateString  = "random"
+	oauthStateString = "random"
 )
 
+// @Summary Login
+// @Description Login
+// @Tags User
+// @Accept  json
+// @Produce  json
+// @Param user body database.Logging true "Login"
+// @Router /user/login [post]
 func Login(c *gin.Context) {
-	user = database.User{}
+	var user database.Logging
 	var Find database.User
 	c.ShouldBindJSON(&user)
-	helper.DB.First(&Find, "email=?", user.Email)
+	helper.DB.First(&Find, "email=?", user.Username)
 
 	err := bcrypt.CompareHashAndPassword([]byte(Find.Password), []byte(user.Password))
 	if err != nil {
-		c.JSON(200, "Invalid Username or Password.")
+		c.JSON(400, gin.H{"code": 401, "status": "error", "message": "Invalid Username or Password."})
 		return
 	}
 	if Find.Status == "Block" {
-		c.JSON(200, "User Blocked")
+		c.JSON(400, gin.H{"code": 401, "status": "error", "message": "User Blocked"})
 		return
 	}
 
@@ -45,15 +51,25 @@ func Login(c *gin.Context) {
 	c.SetCookie("user", token, int((time.Hour * 24).Seconds()), "/", "localhost", false, true)
 	fmt.Println(token)
 	c.JSON(200, gin.H{
-		"messe": "successfully Login.",
-		"token": token,
+		"code":    200,
+		"status":  "success",
+		"message": "successfully Login.",
+		"data": gin.H{
+			"token": token,
+		},
 	})
 
 }
 
+// @Summary Logout
+// @Description Logout
+// @Tags User
+// @Produce json
+// @Success 200 {object} string "ok"
+// @Router /user/logout [get]
 func Logout(c *gin.Context) {
 	c.SetCookie("user", "", -1, "/", "localhost", false, true)
-	c.JSON(200, "Successfully logout.")
+	c.JSON(200, gin.H{"code": 200, "status": "Success", "message": "Successfully logout.", "data": gin.H{}})
 
 }
 
@@ -81,7 +97,7 @@ func HandleGoogleCallback(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid state"})
 		return
 	}
-	
+
 	fmt.Println("===========0======")
 	code := c.Request.URL.Query().Get("code")
 	token, err := googleOauthConfig.Exchange(context.Background(), code)

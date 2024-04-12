@@ -672,6 +672,101 @@
                 ],
                 "responses": {}
             }
+        },
+        "/user/home": {
+            "get": {
+                "description": "Get All Products",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User-Product"
+                ],
+                "summary": "Get All Products",
+                "responses": {}
+            }
+        },
+        "/user/login": {
+            "post": {
+                "description": "Login",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Login",
+                "parameters": [
+                    {
+                        "description": "Login",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/database.Logging"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/user/logout": {
+            "get": {
+                "description": "Logout",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Logout",
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/productDetail/{ID}": {
+            "get": {
+                "description": "Product Detail",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User-Product"
+                ],
+                "summary": "Product Detail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Product ID",
+                        "name": "ID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/user/profile": {
+            "get": {
+                "description": "Get user profile",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User-Profile"
+                ],
+                "summary": "User Profile",
+                "responses": {}
+            }
         }
     },
     "definitions": {
