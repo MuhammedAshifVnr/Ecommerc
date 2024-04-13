@@ -1,5 +1,18 @@
 basePath: /
 definitions:
+  database.AddressData:
+    properties:
+      city:
+        type: string
+      state:
+        type: string
+      street:
+        type: string
+      type:
+        type: string
+      zip:
+        type: integer
+    type: object
   database.CategoryData:
     properties:
       catagory:
@@ -20,6 +33,15 @@ definitions:
         type: string
       percentage:
         type: number
+    type: object
+  database.UserData:
+    properties:
+      gender:
+        type: string
+      mobile:
+        type: integer
+      username:
+        type: string
     type: object
 host: localhost:8080
 info:
@@ -484,6 +506,132 @@ paths:
       responses: {}
       tags:
       - Admin-Users
+  /user/address:
+    get:
+      consumes:
+      - application/json
+      description: User can list Address
+      produces:
+      - application/json
+      responses: {}
+      summary: Address listing
+      tags:
+      - User-Address
+    post:
+      consumes:
+      - application/json
+      description: User can Add Address
+      parameters:
+      - description: Address
+        in: body
+        name: address
+        required: true
+        schema:
+          $ref: '#/definitions/database.AddressData'
+      produces:
+      - application/json
+      responses: {}
+      summary: Address Adding
+      tags:
+      - User-Address
+  /user/address/{ID}:
+    delete:
+      description: User can Delete Address
+      parameters:
+      - description: Address ID
+        in: path
+        name: ID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Address Delete
+      tags:
+      - User-Address
+    patch:
+      consumes:
+      - application/json
+      description: User can Edite Address
+      parameters:
+      - description: Address ID
+        in: path
+        name: ID
+        required: true
+        type: string
+      - description: User
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/database.AddressData'
+      produces:
+      - application/json
+      responses: {}
+      summary: Address Edit
+      tags:
+      - User-Address
+  /user/cart:
+    get:
+      description: User can get the cart
+      produces:
+      - application/json
+      responses: {}
+      summary: Get cart
+      tags:
+      - User-Cart
+  /user/cart/{ID}:
+    delete:
+      consumes:
+      - application/json
+      description: User can delete the product from cart
+      parameters:
+      - description: ID
+        in: path
+        name: ID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Delete in Cart
+      tags:
+      - User-Cart
+    patch:
+      consumes:
+      - multipart/form-Data
+      description: User can update the quantity of product in cart
+      parameters:
+      - description: ID
+        in: path
+        name: ID
+        required: true
+        type: string
+      - description: Quantity
+        in: formData
+        name: quantity
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      summary: Update Quantity in Cart
+      tags:
+      - User-Cart
+    post:
+      description: User can add product in cart
+      parameters:
+      - description: Product ID
+        in: path
+        name: ID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      summary: Adding Product in cart
+      tags:
+      - User-Cart
   /user/home:
     get:
       description: Get All Products
@@ -546,6 +694,23 @@ paths:
       - application/json
       responses: {}
       summary: User Profile
+      tags:
+      - User-Profile
+    patch:
+      consumes:
+      - application/json
+      description: User can Edite Profile
+      parameters:
+      - description: User
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/database.UserData'
+      produces:
+      - application/json
+      responses: {}
+      summary: Edite Profile
       tags:
       - User-Profile
 swagger: "2.0"

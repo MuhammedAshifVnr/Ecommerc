@@ -17,3 +17,17 @@ type OfferProductData struct {
 	Expirey    time.Time `json:"expirey"`
 }
 
+type UserData struct{
+	Name     string `json:"username"`
+    Mobile   int    `json:"mobile"`
+    Gender   string `json:"gender"`
+}
+
+type AddressData struct{
+	Type    string `jsonz:"type"`
+    Street  string `json:"street"`
+    City    string `json:"city"`
+    State   string `json:"state"`
+    ZipCode uint   `json:"zip"`
+}
+

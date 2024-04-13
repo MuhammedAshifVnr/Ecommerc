@@ -22,12 +22,13 @@ func UserRouters(r *gin.RouterGroup) {
 
 	r.GET("/home", users.Homepage)
 	r.GET("/productDetail/:ID", users.ProductDetail)
+
 	r.GET("/profile", middleware.AuthMiddleware(UserRole), users.Profile)
 	r.PATCH("/profile", middleware.AuthMiddleware(UserRole), users.EditeProfile)
 
 	r.GET("/address", middleware.AuthMiddleware(UserRole), users.Address)
 	r.POST("/address", middleware.AuthMiddleware(UserRole), users.AddAddress)
-	r.PUT("/address/:ID", middleware.AuthMiddleware(UserRole), users.AddressEdit)
+	r.PATCH("/address/:ID", middleware.AuthMiddleware(UserRole), users.AddressEdit)
 	r.DELETE("/address/:ID", middleware.AuthMiddleware(UserRole), users.AddressDelete)
 
 	r.GET("/cart", middleware.AuthMiddleware(UserRole), users.Cart)

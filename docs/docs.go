@@ -679,6 +679,189 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/user/address": {
+            "get": {
+                "description": "User can list Address",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User-Address"
+                ],
+                "summary": "Address listing",
+                "responses": {}
+            },
+            "post": {
+                "description": "User can Add Address",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User-Address"
+                ],
+                "summary": "Address Adding",
+                "parameters": [
+                    {
+                        "description": "Address",
+                        "name": "address",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/database.AddressData"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/user/address/{ID}": {
+            "delete": {
+                "description": "User can Delete Address",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User-Address"
+                ],
+                "summary": "Address Delete",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Address ID",
+                        "name": "ID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            },
+            "patch": {
+                "description": "User can Edite Address",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User-Address"
+                ],
+                "summary": "Address Edit",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Address ID",
+                        "name": "ID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "User",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/database.AddressData"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/user/cart": {
+            "get": {
+                "description": "User can get the cart",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User-Cart"
+                ],
+                "summary": "Get cart",
+                "responses": {}
+            }
+        },
+        "/user/cart/{ID}": {
+            "post": {
+                "description": "User can add product in cart",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User-Cart"
+                ],
+                "summary": "Adding Product in cart",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Product ID",
+                        "name": "ID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            },
+            "delete": {
+                "description": "User can delete the product from cart",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User-Cart"
+                ],
+                "summary": "Delete in Cart",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID",
+                        "name": "ID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            },
+            "patch": {
+                "description": "User can update the quantity of product in cart",
+                "consumes": [
+                    "multipart/form-Data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User-Cart"
+                ],
+                "summary": "Update Quantity in Cart",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID",
+                        "name": "ID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Quantity",
+                        "name": "quantity",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/user/home": {
             "get": {
                 "description": "Get All Products",
@@ -772,10 +955,55 @@ const docTemplate = `{
                 ],
                 "summary": "User Profile",
                 "responses": {}
+            },
+            "patch": {
+                "description": "User can Edite Profile",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User-Profile"
+                ],
+                "summary": "Edite Profile",
+                "parameters": [
+                    {
+                        "description": "User",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/database.UserData"
+                        }
+                    }
+                ],
+                "responses": {}
             }
         }
     },
     "definitions": {
+        "database.AddressData": {
+            "type": "object",
+            "properties": {
+                "city": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "string"
+                },
+                "street": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "zip": {
+                    "type": "integer"
+                }
+            }
+        },
         "database.CategoryData": {
             "type": "object",
             "properties": {
@@ -806,6 +1034,20 @@ const docTemplate = `{
                 },
                 "percentage": {
                     "type": "number"
+                }
+            }
+        },
+        "database.UserData": {
+            "type": "object",
+            "properties": {
+                "gender": {
+                    "type": "string"
+                },
+                "mobile": {
+                    "type": "integer"
+                },
+                "username": {
+                    "type": "string"
                 }
             }
         }

@@ -9,6 +9,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// @Summary Adding Product in cart
+// @Description User can add product in cart
+// @Tags       User-Cart
+// @Produce    json
+// @Param ID path int true "Product ID"
+// @Router /user/cart/{ID} [post]
 func AddCart(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("ID"))
 	var cart database.Cart
@@ -16,12 +22,12 @@ func AddCart(c *gin.Context) {
 	userId := c.GetUint("userID")
 	helper.DB.Where("product_id=? AND user_id=?", id, userId).First(&cart)
 	if cart.ID != 0 {
-		c.JSON(400, gin.H{"Message": "Item alredy in cart."})
+		c.JSON(400, gin.H{"code": 400, "status": "error", "data": gin.H{}, "message": "Item alredy in cart."})
 		return
 	}
 	helper.DB.Where("id=?", id).First(&product)
 	if product.Quantity == 0 {
-		c.JSON(400, gin.H{"Message": "Product out of stock"})
+		c.JSON(400, gin.H{"code": 400, "status": "error", "data": gin.H{}, "message": "Product out of stock"})
 		return
 	}
 	cart = database.Cart{
@@ -30,42 +36,72 @@ func AddCart(c *gin.Context) {
 		Quantity:  1,
 	}
 	helper.DB.Create(&cart)
-	c.JSON(200, gin.H{"Message": "added to cart."})
+	c.JSON(200, gin.H{"code": 200, "status": "Success", "data": gin.H{}, "message": "added to cart."})
 }
 
+// @Summary    Get cart
+// @Description User can get the cart
+// @Tags       User-Cart
+// @Produce    json
+// @Router /user/cart [get]
 func Cart(c *gin.Context) {
 	var cart []database.Cart
 	helper.DB.Preload("Product.Offers").Where("user_id=?", c.GetUint("userID")).Find(&cart)
 	var total float64
 	var discount float64
-	if len(cart)==0{
-		c.JSON(401,gin.H{"Massege":"Cart is empty"})
+	if len(cart) == 0 {
+		c.JSON(401, gin.H{"Massege": "Cart is empty"})
 		return
 	}
+	var cart_list []gin.H
 	for _, v := range cart {
 		discount += ProductOffer(v.ProductID)
 		total += (float64(v.Product.ProductPrice) - ProductOffer(v.ProductID)) * float64(v.Quantity)
+		cart_list = append(cart_list, gin.H{
+			"ID":           v.ID,
+			"productName":  v.Product.ProductName,
+			"offerPrice":   v.Product.ProductPrice - ProductOffer(v.ProductID),
+			"quantity":     v.Quantity,
+			"productImage": v.Product.ImageUrls,
+			"orginalPrice": v.Product.ProductPrice,
+			"offer":        v.Product.Offers.Percentage,
+		})
 	}
 	var delvery int
-	if total<=1500{
-		delvery=40
-		total+=float64(delvery)
+	if total <= 1500 {
+		delvery = 40
+		total += float64(delvery)
 	}
-	c.JSON(200, gin.H{
-		"Cart":        cart,
-		"Discount":    discount,
-		"DliveryCharge":delvery,
-		"TotalAmount": total,
-	})
+	c.JSON(200, gin.H{"code": 200, "status": "Success", "data": gin.H{
+		"Cart":          cart_list,
+		"Discount":      discount,
+		"DliveryCharge": delvery,
+		"TotalAmount":   total,
+	}})
 }
 
+// @Summary Delete in Cart
+// @Description User can delete the product from cart
+// @Tags User-Cart
+// @Accept json
+// @Produce json
+// @Param ID path string true "ID"
+// @Router /user/cart/{ID} [delete]
 func CartDelete(c *gin.Context) {
 	id := c.Param("ID")
 	var cart database.Cart
 	helper.DB.Where("id=?", id).Delete(&cart)
-	c.JSON(200, "Deleted.")
+	c.JSON(200, gin.H{"code": 200, "status": "Success", "data": gin.H{}, "message": "Deleted."})
 }
 
+// @Summary Update Quantity in Cart
+// @Description User can update the quantity of product in cart
+// @Tags User-Cart
+// @Accept multipart/form-Data
+// @Produce json
+// @Param ID path string true "ID"
+// @Param quantity formData int true "Quantity"
+// @Router /user/cart/{ID} [patch]
 func CartQuantity(c *gin.Context) {
 	id := c.Param("ID")
 	var cart database.Cart
@@ -74,20 +110,18 @@ func CartQuantity(c *gin.Context) {
 	helper.DB.Preload("Product").Where("id=?", id).First(&cart)
 
 	if quantity > 10 {
-		c.JSON(http.StatusBadRequest, "Only 10 unit's allowed each order")
+		c.JSON(http.StatusBadRequest, gin.H{"code": 400, "status": "error", "data": gin.H{}, "message": "Only 10 unit's allowed each order"})
 		return
 	}
 	if quantity > cart.Product.Quantity {
-		c.JSON(http.StatusBadRequest, "Product is out of stock")
+		c.JSON(http.StatusBadRequest, gin.H{"code": 400, "status": "error", "data": gin.H{}, "message": "Product is out of stock"})
 		return
 	}
 	if quantity <= 0 {
-		c.JSON(400, gin.H{
-			"error": "Please Enter a valid Quantity.",
-		})
+		c.JSON(400, gin.H{"code": 400, "status": "error", "data": gin.H{}, "message": "Please Enter a valid Quantity."})
 		return
 	}
 
 	helper.DB.Model(&database.Cart{}).Where("id=?", id).Update("Quantity", quantity)
-	c.JSON(200, "Quantity Updated.")
+	c.JSON(200, gin.H{"code": 200, "status": "Success", "data": gin.H{}, "message": "Quantity Updated."})
 }

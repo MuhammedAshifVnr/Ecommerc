@@ -94,7 +94,7 @@ func Testcheckout(c *gin.Context) {
 		return
 	}
 	totalAmount -= coupon.Amount
-	
+
 	if totalAmount <= 1500 {
 		totalAmount += 40
 		tx.Model(&database.Order{}).Where("id=?", orderID).Update("dlivery_charge", 40)
@@ -169,12 +169,27 @@ func Testcheckout(c *gin.Context) {
 
 }
 
+// @Summary Order Listing
+// @Description Order Listing
+// @Tags User-Order
+// @Accept  json
+// @Produce  json
+// @Router /user/order [get]
 func Order(c *gin.Context) {
 	var orders []database.Order
 	userID := c.GetUint("userID")
-	helper.DB.Where("user_id=?", userID).Find(&orders)
+	helper.DB.Preload("Coupon").Where("user_id=?", userID).Find(&orders)
+	var order_list []gin.H
+	for _, v := range orders {
+		order_list = append(order_list, gin.H{
+			"ID":            v.ID,
+			"paymentMethod": v.PaymentMethod,
+			"coupon":v.Coupon.Code,
+			"total": v.Amount,
+		})
+	}
 
-	c.JSON(200, gin.H{"Orders": orders})
+	c.JSON(200, gin.H{"code":200,"status":"Success","data": gin.H{"orders": order_list}})
 }
 
 func OrderDetils(c *gin.Context) {
