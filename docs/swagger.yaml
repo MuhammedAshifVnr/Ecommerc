@@ -632,6 +632,32 @@ paths:
       summary: Adding Product in cart
       tags:
       - User-Cart
+  /user/checkout:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Checkout Page
+      parameters:
+      - description: Payment Method
+        in: formData
+        name: payment
+        required: true
+        type: string
+      - description: Address
+        in: formData
+        name: address
+        required: true
+        type: string
+      - description: coupon
+        in: formData
+        name: coupon
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Checkout Page
+      tags:
+      - User-Cart
   /user/home:
     get:
       description: Get All Products
@@ -672,6 +698,50 @@ paths:
       summary: Logout
       tags:
       - User
+  /user/order:
+    get:
+      consumes:
+      - application/json
+      description: Order Listing
+      produces:
+      - application/json
+      responses: {}
+      summary: Order Listing
+      tags:
+      - User-Order
+  /user/order-item/{ID}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Order ID
+        in: path
+        name: ID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Order item listing
+      tags:
+      - User-Order
+  /user/order/{ID}:
+    patch:
+      consumes:
+      - application/json
+      description: Order Cancelation
+      parameters:
+      - description: Order ID
+        in: path
+        name: ID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Order Cancelation
+      tags:
+      - User-Order
   /user/productDetail/{ID}:
     get:
       description: Product Detail

@@ -13,6 +13,15 @@ import (
 	"github.com/razorpay/razorpay-go"
 )
 
+// @Summary Checkout Page
+// @Description Checkout Page
+// @Tags User-Cart
+// @Accept	multipart/form-data
+// @Produce json
+// @Param payment formData string true "Payment Method"
+// @Param address formData string true "Address"
+// @Param coupon formData string false "coupon"
+// @Router /user/checkout [post]
 func Testcheckout(c *gin.Context) {
 	var cartitems []database.Cart
 	userId := c.GetUint("userID")
@@ -178,27 +187,52 @@ func Testcheckout(c *gin.Context) {
 func Order(c *gin.Context) {
 	var orders []database.Order
 	userID := c.GetUint("userID")
-	helper.DB.Preload("Coupon").Where("user_id=?", userID).Find(&orders)
+	helper.DB.Preload("Coupon").Where("user_id=?", userID).Order("created_at DESC").Find(&orders)
 	var order_list []gin.H
 	for _, v := range orders {
 		order_list = append(order_list, gin.H{
 			"ID":            v.ID,
+			"created":       v.CreatedAt,
 			"paymentMethod": v.PaymentMethod,
-			"coupon":v.Coupon.Code,
-			"total": v.Amount,
+			"coupon":        v.Coupon.Code,
+			"amount":        v.Amount,
 		})
 	}
 
-	c.JSON(200, gin.H{"code":200,"status":"Success","data": gin.H{"orders": order_list}})
+	c.JSON(200, gin.H{"code": 200, "status": "Success", "data": gin.H{"orders": order_list}})
 }
 
+// @Summary Order item listing
+// @Descripton Order item listing
+// @Tags User-Order
+// @Accept  json
+// @Produce  json
+// @Param ID path string true "Order ID"
+// @Router /user/order-item/{ID} [get]
 func OrderDetils(c *gin.Context) {
 	var orders database.OrderItems
 	id := c.Param("ID")
 	helper.DB.Preload("Product").Preload("Order.Coupon").Preload("Order.Address").Where("order_id=?", id).Find(&orders)
-	c.JSON(200, gin.H{"Items": orders})
+	item_list := gin.H{
+		"id":           orders.ID,
+		"amount":       orders.Amount,
+		"productName":  orders.Product.ProductName,
+		"productImage": orders.Product.ImageUrls,
+		"orderID":      orders.OrderID,
+		"status":       orders.Status,
+		"quantity":     orders.Quantity,
+	}
+
+	c.JSON(200, gin.H{"code": 200, "status": "Success", "data": gin.H{"Items": item_list}})
 }
 
+// @Summary Order Cancelation
+// @Description Order Cancelation
+// @Tags User-Order
+// @Accept  json
+// @Produce  json
+// @Param ID path string true "Order ID"
+// @Router /user/order/{ID} [patch]
 func CancelOrder(c *gin.Context) {
 	id := c.Param("ID")
 	var orderItem database.OrderItems

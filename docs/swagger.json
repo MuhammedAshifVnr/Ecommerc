@@ -856,6 +856,44 @@
                 "responses": {}
             }
         },
+        "/user/checkout": {
+            "post": {
+                "description": "Checkout Page",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User-Cart"
+                ],
+                "summary": "Checkout Page",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Payment Method",
+                        "name": "payment",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Address",
+                        "name": "address",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "coupon",
+                        "name": "coupon",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/user/home": {
             "get": {
                 "description": "Get All Products",
@@ -914,6 +952,71 @@
                         }
                     }
                 }
+            }
+        },
+        "/user/order": {
+            "get": {
+                "description": "Order Listing",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User-Order"
+                ],
+                "summary": "Order Listing",
+                "responses": {}
+            }
+        },
+        "/user/order-item/{ID}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User-Order"
+                ],
+                "summary": "Order item listing",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Order ID",
+                        "name": "ID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/user/order/{ID}": {
+            "patch": {
+                "description": "Order Cancelation",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User-Order"
+                ],
+                "summary": "Order Cancelation",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Order ID",
+                        "name": "ID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
             }
         },
         "/user/productDetail/{ID}": {
