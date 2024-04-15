@@ -7,19 +7,20 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 )
 
-var user database.User
-var otp string
-
-type FormOtp struct {
-	Userotp string `gorm:"not null" json:"otp"`
-}
-
+// @Summary Signup
+// @Description Signup
+// @Tags User-Signup
+// @Accept  json
+// @Produce  json
+// @Param user body database.SignupData true "User"
+// @Router /user/signup [post]
 func Signup(c *gin.Context) {
-	user = database.User{}
+	var user database.SignupData
 	var find database.Otp
 	c.ShouldBindJSON(&user)
 	if err := helper.DB.Where("email=?", user.Email).First(&find); err == nil {
@@ -34,12 +35,12 @@ func Signup(c *gin.Context) {
 
 	user.Password = string(hashedPassword)
 
-	otp = helper.GenerateOtp()
+	otp := helper.GenerateOtp()
 	err := helper.DB.Where("email = ?", user.Email).First(&find)
 	if err.Error != nil {
 		newOtp := database.Otp{
 			Secret: otp,
-			Expiry: time.Now().Add(10 * time.Second),
+			Expiry: time.Now().Add(120 * time.Second),
 			Email:  user.Email,
 		}
 		helper.DB.Create(&newOtp)
@@ -49,31 +50,56 @@ func Signup(c *gin.Context) {
 			Expiry: time.Now().Add(60 * time.Second),
 		})
 	}
+	data := map[string]interface{}{
+		"name":     user.Name,
+		"email":    user.Email,
+		"password": hashedPassword,
+	}
 	helper.SendOtp(user.Email, otp)
+	// session
+	session := sessions.Default(c)
+	session.Set(user.Email, data)
+	session.Save()
+	c.SetCookie("sessionID", user.Email, 3600, "/", "", false, true)
 
 	c.JSON(http.StatusSeeOther, "Otp send the email "+otp)
 
 }
 
+// @Summary OtpChecker
+// @Description OtpChecker
+// @Tags User-Signup
+// @Accept  multipart/form-data
+// @Produce  json
+// @Param OTP formData string true "OTP"
+// @Router /user/otp [post]
 func OtpChecker(c *gin.Context) {
-	var formvalue FormOtp
 	var find database.Otp
-	c.ShouldBindJSON(&formvalue)
+	otp := c.Request.FormValue("OTP")
 	now := time.Now()
-	helper.DB.Where("email=? AND expiry > ?", user.Email, now).First(&find)
+	helper.DB.Where("secret=? AND expiry > ?", otp, now).First(&find)
 	fmt.Println(find.Secret)
-	if formvalue.Userotp != find.Secret {
+	if otp != find.Secret {
 		c.JSON(http.StatusSeeOther, "Invalied OTP Please Check You'r Mail.")
 		return
 	}
-	if err := helper.DB.Create(&user); err.Error != nil {
+	session := sessions.Default(c)
+	cookie, _ := c.Cookie("sessionID")
+	userDatas := session.Get(cookie)
+	userMap, _ := userDatas.(map[string]interface{})
+	fmt.Println(userMap)
+	if err := helper.DB.Create(&database.User{
+		Name:     userMap["name"].(string),
+		Email:    userMap["email"].(string),
+		Password: string(userMap["password"].([]uint8)),
+	}); err.Error != nil {
 		c.JSON(200, "Email Found Duplicate.")
 		return
 	} else {
 		var user database.User
-		if err:=helper.DB.Where("email=?",find.Email).First(&user);err.Error!=nil{
-			fmt.Println("email fount :",find.Email)
-			fmt.Println("==========",err.Error)
+		if err := helper.DB.Where("email=?", find.Email).First(&user); err.Error != nil {
+			fmt.Println("email fount :", find.Email)
+			fmt.Println("==========", err.Error)
 		}
 		wallet := database.Wallet{
 			UserID: user.ID,
@@ -87,7 +113,8 @@ func OtpChecker(c *gin.Context) {
 
 func ResendOtp(c *gin.Context) {
 	var find database.Otp
-	otp = helper.GenerateOtp()
+	var user database.User
+	otp := helper.GenerateOtp()
 	err := helper.DB.Where("email = ?", user.Email).First(&find)
 	if err.Error != nil {
 		newOtp := database.Otp{

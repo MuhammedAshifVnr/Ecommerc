@@ -41,6 +41,15 @@ definitions:
       review:
         type: string
     type: object
+  database.SignupData:
+    properties:
+      useremail:
+        type: string
+      username:
+        type: string
+      userpassword:
+        type: string
+    type: object
   database.UserData:
     properties:
       gender:
@@ -749,6 +758,23 @@ paths:
       summary: Order Cancelation
       tags:
       - User-Order
+  /user/otp:
+    post:
+      consumes:
+      - multipart/form-data
+      description: OtpChecker
+      parameters:
+      - description: OTP
+        in: formData
+        name: OTP
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: OtpChecker
+      tags:
+      - User-Signup
   /user/productDetail/{ID}:
     get:
       description: Product Detail
@@ -813,4 +839,22 @@ paths:
       summary: User can write review
       tags:
       - User-Review
+  /user/signup:
+    post:
+      consumes:
+      - application/json
+      description: Signup
+      parameters:
+      - description: User
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/database.SignupData'
+      produces:
+      - application/json
+      responses: {}
+      summary: Signup
+      tags:
+      - User-Signup
 swagger: "2.0"

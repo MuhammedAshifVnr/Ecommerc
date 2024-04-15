@@ -1025,6 +1025,31 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/user/otp": {
+            "post": {
+                "description": "OtpChecker",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User-Signup"
+                ],
+                "summary": "OtpChecker",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "OTP",
+                        "name": "OTP",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/user/productDetail/{ID}": {
             "get": {
                 "description": "Product Detail",
@@ -1118,6 +1143,33 @@ const docTemplate = `{
                 ],
                 "responses": {}
             }
+        },
+        "/user/signup": {
+            "post": {
+                "description": "Signup",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User-Signup"
+                ],
+                "summary": "Signup",
+                "parameters": [
+                    {
+                        "description": "User",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/database.SignupData"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
         }
     },
     "definitions": {
@@ -1181,6 +1233,20 @@ const docTemplate = `{
                     "type": "number"
                 },
                 "review": {
+                    "type": "string"
+                }
+            }
+        },
+        "database.SignupData": {
+            "type": "object",
+            "properties": {
+                "useremail": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                },
+                "userpassword": {
                     "type": "string"
                 }
             }

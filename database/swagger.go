@@ -35,3 +35,9 @@ type ReviewData struct {
 	Rating  float64 `json:"rating"`
 	Comment string  `json:"review"`
 }
+
+type SignupData struct {
+	Name     string `json:"username"`
+	Email    string `json:"useremail"`
+	Password string `json:"userpassword"`
+}
