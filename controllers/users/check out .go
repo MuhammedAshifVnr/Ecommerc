@@ -32,7 +32,7 @@ func Testcheckout(c *gin.Context) {
 
 	if paymentMethod == "" || Address == 0 {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Payment Method and Address are required",
+			"code": 400, "status": "Erorr", "data": gin.H{}, "message": "Payment Method and Address are required",
 		})
 		return
 	}
@@ -41,7 +41,7 @@ func Testcheckout(c *gin.Context) {
 	if couponCode != "" {
 		if err := helper.DB.Where("code=?", couponCode).First(&coupon); err.Error != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"error": "Invalid coupon code",
+				"code": 400, "status": "Erorr", "data": gin.H{}, "message": "Invalid coupon code",
 			})
 			return
 		}
@@ -59,7 +59,7 @@ func Testcheckout(c *gin.Context) {
 	if err := tx.Create(&order); err.Error != nil {
 		tx.Rollback()
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error,
+			"code": 500, "status": "Erorr", "data": gin.H{}, "message": err.Error,
 		})
 	}
 	var totalAmount float64
@@ -68,7 +68,7 @@ func Testcheckout(c *gin.Context) {
 		if item.Quantity >= uint(item.Product.Quantity) {
 			tx.Rollback()
 			c.JSON(http.StatusBadRequest, gin.H{
-				"error": "Insufficent stock for product " + item.Product.ProductName,
+				"code": 400, "status": "Erorr", "data": gin.H{}, "message": "Insufficent stock for product " + item.Product.ProductName,
 			})
 			return
 		}
@@ -77,7 +77,7 @@ func Testcheckout(c *gin.Context) {
 		if err := helper.DB.Save(&item.Product).Error; err != nil {
 			tx.Rollback()
 			c.JSON(http.StatusInternalServerError, gin.H{
-				"error": "Faild to Update Product Stock",
+				"code": 500, "status": "Erorr", "data": gin.H{}, "message": "Faild to Update Product Stock",
 			})
 			return
 		}
@@ -91,7 +91,7 @@ func Testcheckout(c *gin.Context) {
 		if err := tx.Create(&orderItem); err.Error != nil {
 			tx.Rollback()
 			c.JSON(http.StatusBadRequest, gin.H{
-				"error": "Items cant cerate.",
+				"code": 400, "status": "Erorr", "data": gin.H{}, "message": "Items cant cerate.",
 			})
 			return
 		}
@@ -99,7 +99,7 @@ func Testcheckout(c *gin.Context) {
 	}
 	if totalAmount <= float64(coupon.Limit) {
 		tx.Rollback()
-		c.JSON(http.StatusBadRequest, gin.H{"error": "You can't use this coupon."})
+		c.JSON(http.StatusBadRequest, gin.H{"code": 400, "status": "Erorr", "data": gin.H{}, "message": "You can't use this coupon."})
 		return
 	}
 	totalAmount -= coupon.Amount
@@ -121,7 +121,7 @@ func Testcheckout(c *gin.Context) {
 		if err != nil {
 			tx.Rollback()
 			c.JSON(http.StatusInternalServerError, gin.H{
-				"error===": err.Error(),
+				"code": 500, "status": "Erorr", "data": gin.H{}, "message": err.Error(),
 			})
 			return
 		}
@@ -136,25 +136,36 @@ func Testcheckout(c *gin.Context) {
 		helper.DB.Model(&database.Order{}).Where("id=?", orderID).Update("payment_id", paymentOrder["id"])
 		helper.DB.Where("user_id=?", userId).Delete(&database.Cart{})
 		c.JSON(http.StatusOK, gin.H{
-			"message":   "Order Placed Successfully.",
-			"Amount":    totalAmount,
-			"PaymentID": paymentOrder["id"],
+			"code":    200,
+			"status":  "Success",
+			"message": "Order Placed Successfully.",
+			"data": gin.H{
+				"Amount":    totalAmount,
+				"PaymentID": paymentOrder["id"],
+			},
 		})
 	} else if order.PaymentMethod == "COD" {
 		if totalAmount >= 1000 {
 			tx.Rollback()
 			c.JSON(404, gin.H{
-				"Error":   "COD not available for this order",
-				"Massege": "Choose any another payment menthod.",
+				"code":    400,
+				"status":  "Failed",
+				"message": "Choose any another payment menthod.",
+				"data": gin.H{
+					"Error": "COD not available for this order",
+				},
 			})
 			return
 		}
 		tx.Commit()
 		helper.DB.Where("user_id=?", userId).Delete(&database.Cart{})
 		c.JSON(http.StatusOK, gin.H{
+			"code":    200,
+			"status":  "Success",
 			"message": "Order Placed Successfully. Product Get Soon",
-			"Amount":  totalAmount,
-		})
+			"data": gin.H{
+				"Amount": totalAmount,
+			}})
 	} else if order.PaymentMethod == "WALLET" {
 		var wallet database.Wallet
 		helper.DB.Where("user_id=?", userId).First(&wallet)
@@ -164,13 +175,16 @@ func Testcheckout(c *gin.Context) {
 			tx.Commit()
 			helper.DB.Where("user_id=?", userId).Delete(&database.Cart{})
 			c.JSON(http.StatusOK, gin.H{
+				"code":    200,
+				"status":  "Success",
 				"message": "Order Placed Successfully.",
-				"Amount":  totalAmount,
-			})
+				"data": gin.H{
+					"Amount": totalAmount,
+				}})
 		} else {
 			tx.Rollback()
 			c.JSON(http.StatusBadRequest, gin.H{
-				"message": "Inefficient Balance",
+				"code": 400, "status": "Failed", "data": gin.H{}, "message": "Inefficient Balance",
 			})
 		}
 
@@ -238,13 +252,16 @@ func CancelOrder(c *gin.Context) {
 	var orderItem database.OrderItems
 	if err := helper.DB.Preload("Order").Preload("Order.Coupon").Where("id=?", id).First(&orderItem); err.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Can't Find the orderItem table.",
+			"code":400,
+			"status":"Failed",
+			"message": "Can't Find the orderItem table.",
+			"data": gin.H{},
 		})
 		return
 	}
 	if orderItem.Status == "Cancelled" {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "This Product alredy canclled ",
+			"code": 200, "status": "Error", "data": gin.H{}, "message": "This Product alredy canclled ",
 		})
 		return
 	}
@@ -282,7 +299,7 @@ func CancelOrder(c *gin.Context) {
 		helper.DB.Model(&orderItem.Order).Updates(&orderItem.Order)
 		helper.DB.Save(&orderItem)
 	}
-	c.JSON(200, gin.H{"Massage": "Order Cancelled."})
+	c.JSON(200, gin.H{"code": 200, "status": "Success", "data": gin.H{}, "message": "Order Cancelled."})
 
 }
 
