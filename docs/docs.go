@@ -1084,6 +1084,40 @@ const docTemplate = `{
                 ],
                 "responses": {}
             }
+        },
+        "/user/review/{id}": {
+            "post": {
+                "description": "User can write review",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User-Review"
+                ],
+                "summary": "User can write review",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Product ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Review",
+                        "name": "review",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/database.ReviewData"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
         }
     },
     "definitions": {
@@ -1137,6 +1171,17 @@ const docTemplate = `{
                 },
                 "percentage": {
                     "type": "number"
+                }
+            }
+        },
+        "database.ReviewData": {
+            "type": "object",
+            "properties": {
+                "rating": {
+                    "type": "number"
+                },
+                "review": {
+                    "type": "string"
                 }
             }
         },

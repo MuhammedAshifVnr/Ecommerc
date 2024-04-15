@@ -34,6 +34,13 @@ definitions:
       percentage:
         type: number
     type: object
+  database.ReviewData:
+    properties:
+      rating:
+        type: number
+      review:
+        type: string
+    type: object
   database.UserData:
     properties:
       gender:
@@ -783,4 +790,27 @@ paths:
       summary: Edite Profile
       tags:
       - User-Profile
+  /user/review/{id}:
+    post:
+      consumes:
+      - application/json
+      description: User can write review
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Review
+        in: body
+        name: review
+        required: true
+        schema:
+          $ref: '#/definitions/database.ReviewData'
+      produces:
+      - application/json
+      responses: {}
+      summary: User can write review
+      tags:
+      - User-Review
 swagger: "2.0"
