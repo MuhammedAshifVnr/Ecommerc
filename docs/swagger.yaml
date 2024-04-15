@@ -816,6 +816,17 @@ paths:
       summary: Edite Profile
       tags:
       - User-Profile
+  /user/reotp:
+    post:
+      consumes:
+      - application/json
+      description: Resend OTP
+      produces:
+      - application/json
+      responses: {}
+      summary: Resend OTP
+      tags:
+      - User-Signup
   /user/review/{id}:
     post:
       consumes:

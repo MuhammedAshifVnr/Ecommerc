@@ -111,11 +111,19 @@ func OtpChecker(c *gin.Context) {
 
 }
 
+// @Summary Resend OTP
+// @Description Resend OTP
+// @Tags User-Signup
+// @Accept  json
+// @Produce  json
+// @Router /user/reotp [post]
 func ResendOtp(c *gin.Context) {
 	var find database.Otp
 	var user database.User
 	otp := helper.GenerateOtp()
-	err := helper.DB.Where("email = ?", user.Email).First(&find)
+	email,_:=c.Cookie("sessionID")
+	fmt.Println("======",email)
+	err := helper.DB.Where("email = ?", email).First(&find)
 	if err.Error != nil {
 		newOtp := database.Otp{
 			Secret: otp,
@@ -124,7 +132,7 @@ func ResendOtp(c *gin.Context) {
 		}
 		helper.DB.Create(&newOtp)
 	} else {
-		helper.DB.Model(&find).Where("email = ?", user.Email).Updates(database.Otp{
+		helper.DB.Model(&find).Where("email = ?", email).Updates(database.Otp{
 			Secret: otp,
 			Expiry: time.Now().Add(60 * time.Second),
 		})

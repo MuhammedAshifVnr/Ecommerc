@@ -1110,6 +1110,22 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/user/reotp": {
+            "post": {
+                "description": "Resend OTP",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User-Signup"
+                ],
+                "summary": "Resend OTP",
+                "responses": {}
+            }
+        },
         "/user/review/{id}": {
             "post": {
                 "description": "User can write review",
