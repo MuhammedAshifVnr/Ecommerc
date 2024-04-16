@@ -17,7 +17,7 @@ func GenerateOtp() string {
 
 func SendOtp(email, otp string) error {
 	m := gomail.NewMessage()
-	m.SetHeader("From", "ahfotp@gmail.com")
+	m.SetHeader("From", os.Getenv("appEmail"))
 	m.SetHeader("To", email)
 	m.SetHeader("Subject", "Verification Code for Signup")
 	m.SetBody("text/plain", "Your OTP for signup is: "+otp)

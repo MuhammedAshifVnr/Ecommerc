@@ -206,7 +206,6 @@ func Order(c *gin.Context) {
 	for _, v := range orders {
 		order_list = append(order_list, gin.H{
 			"ID":            v.ID,
-			"created":       v.CreatedAt,
 			"paymentMethod": v.PaymentMethod,
 			"coupon":        v.Coupon.Code,
 			"amount":        v.Amount,
@@ -252,10 +251,10 @@ func CancelOrder(c *gin.Context) {
 	var orderItem database.OrderItems
 	if err := helper.DB.Preload("Order").Preload("Order.Coupon").Where("id=?", id).First(&orderItem); err.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"code":400,
-			"status":"Failed",
+			"code":    400,
+			"status":  "Failed",
 			"message": "Can't Find the orderItem table.",
-			"data": gin.H{},
+			"data":    gin.H{},
 		})
 		return
 	}

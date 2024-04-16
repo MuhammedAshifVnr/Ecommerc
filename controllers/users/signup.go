@@ -55,7 +55,9 @@ func Signup(c *gin.Context) {
 		"email":    user.Email,
 		"password": hashedPassword,
 	}
-	helper.SendOtp(user.Email, otp)
+	if err:=helper.SendOtp(user.Email, otp);err!=nil{
+		c.JSON(400,gin.H{"code":400,"status":"Error","message":""})
+	}
 	// session
 	session := sessions.Default(c)
 	session.Set(user.Email, data)
