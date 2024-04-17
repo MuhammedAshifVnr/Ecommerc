@@ -90,6 +90,6 @@ func HomePage(c *gin.Context) {
 // @Router       /admin/logout [get]
 func Logout(c *gin.Context) {
 
-	c.SetCookie("admin", "", -1, "/", "localhost", false, true)
+	c.SetCookie("admin", "", -1, "/", "ashif.online", false, false)
 	c.JSON(200, gin.H{"code": 200, "status": "Success", "message": "Successfully logout."})
 }

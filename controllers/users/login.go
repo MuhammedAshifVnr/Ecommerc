@@ -68,7 +68,7 @@ func Login(c *gin.Context) {
 // @Success 200 {object} string "ok"
 // @Router /user/logout [get]
 func Logout(c *gin.Context) {
-	c.SetCookie("user", "", -1, "/", "localhost", false, true)
+	c.SetCookie("user", "", -1, "/", "ashif.online", false, false)
 	c.JSON(200, gin.H{"code": 200, "status": "Success", "message": "Successfully logout.", "data": gin.H{}})
 
 }
@@ -77,7 +77,7 @@ func GetConfig() *oauth2.Config {
 	return &oauth2.Config{
 		ClientID:     os.Getenv("GOOGLE_CLIENT_ID"),
 		ClientSecret: os.Getenv("GOOGLE_CLIENT_SECRET"),
-		RedirectURL:  "http://localhost:8080/user/auth/google/callback",
+		RedirectURL:  "http://ashif.online/user/auth/google/callback",
 		Scopes:       []string{"openid", "profile", "email"},
 		Endpoint:     google.Endpoint,
 	}
