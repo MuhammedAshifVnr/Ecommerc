@@ -106,7 +106,8 @@ func generatePDF(orders []database.OrderItems, totalAmount float64, count int) (
 	pdf.Ln(-1)
 	pdf.Cell(0, 10, "Total Amount: "+strconv.FormatFloat(totalAmount, 'f', 2, 64))
 
-	tempFilePath := "/sales_report.pdf"
+	tempFilePath := "/var/www/ashif.online/html/sales_report.pdf"
+
 
 	err := pdf.OutputFileAndClose(tempFilePath)
 	if err != nil {
