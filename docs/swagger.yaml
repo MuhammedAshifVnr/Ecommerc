@@ -59,7 +59,7 @@ definitions:
       username:
         type: string
     type: object
-host: localhost:8080
+host: ashif.online
 info:
   contact: {}
   description: This is a sample Gin API with Swagger documentation.
