@@ -36,9 +36,9 @@ func GenerateToken(role string, email string, id uint, name string) (string, err
 
 func AuthMiddleware(role string) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		tokenString ,err:= c.Cookie(role)
-		if err!=nil{
-			c.JSON(401,gin.H{"Massage":"Token not found go to the login"})
+		tokenString, err := c.Cookie(role)
+		if err != nil {
+			c.JSON(401, gin.H{"Massage": "Token not found go to the login"})
 			c.Abort()
 			return
 		}
@@ -58,15 +58,15 @@ func AuthMiddleware(role string) gin.HandlerFunc {
 		if !ok {
 			c.JSON(500, gin.H{"error": "Failed to calling claims."})
 		}
-		
-		if role=="user"&&claims.Role != role {
+
+		if claims.Role != role {
 			c.JSON(http.StatusForbidden, gin.H{"error": "You don't have permission."})
 			c.Abort()
 			return
 		}
 		var user database.User
 		helper.DB.Where("id=?", claims.UserID).First(&user)
-		if user.Status == "Block" {
+		if role == "user" && user.Status == "Block" {
 			c.JSON(http.StatusForbidden, gin.H{"error": "Blocked User."})
 			c.Abort()
 			return
