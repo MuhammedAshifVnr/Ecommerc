@@ -223,17 +223,21 @@ func Order(c *gin.Context) {
 // @Param ID path string true "Order ID"
 // @Router /user/order-item/{ID} [get]
 func OrderDetils(c *gin.Context) {
-	var orders database.OrderItems
+	var orders []database.OrderItems
 	id := c.Param("ID")
 	helper.DB.Preload("Product").Preload("Order.Coupon").Preload("Order.Address").Where("order_id=?", id).Find(&orders)
-	item_list := gin.H{
-		"id":           orders.ID,
-		"amount":       orders.Amount,
-		"productName":  orders.Product.ProductName,
-		"productImage": orders.Product.ImageUrls,
-		"orderID":      orders.OrderID,
-		"status":       orders.Status,
-		"quantity":     orders.Quantity,
+	var item_list []gin.H
+	for _, v := range orders {
+
+		item_list = append(item_list, gin.H{
+			"id":           v.ID,
+			"amount":       v.Amount,
+			"productName":  v.Product.ProductName,
+			"productImage": v.Product.ImageUrls,
+			"orderID":      v.OrderID,
+			"status":       v.Status,
+			"quantity":     v.Quantity,
+		})
 	}
 
 	c.JSON(200, gin.H{"code": 200, "status": "Success", "data": gin.H{"Items": item_list}})
