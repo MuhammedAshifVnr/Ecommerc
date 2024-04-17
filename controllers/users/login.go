@@ -48,7 +48,7 @@ func Login(c *gin.Context) {
 	if err != nil {
 		fmt.Println("TOken cant generate.")
 	}
-	c.SetCookie("user", token, int((time.Hour * 24).Seconds()), "/", "localhost", false, true)
+	c.SetCookie("user", token, int((time.Hour * 24).Seconds()), "/", "ashif.online", false, false)
 	fmt.Println(token)
 	c.JSON(200, gin.H{
 		"code":    200,
