@@ -62,7 +62,7 @@ func Signup(c *gin.Context) {
 	session := sessions.Default(c)
 	session.Set(user.Email, data)
 	session.Save()
-	c.SetCookie("sessionID", user.Email, 3600, "/", "", false, true)
+	c.SetCookie("sessionID", user.Email, 3600, "/", "ashif.online", false, false)
 
 	c.JSON(http.StatusSeeOther, "Otp send the email "+otp)
 
