@@ -58,7 +58,8 @@ func AuthMiddleware(role string) gin.HandlerFunc {
 		if !ok {
 			c.JSON(500, gin.H{"error": "Failed to calling claims."})
 		}
-		if claims.Role != role {
+		
+		if role=="user"&&claims.Role != role {
 			c.JSON(http.StatusForbidden, gin.H{"error": "You don't have permission."})
 			c.Abort()
 			return

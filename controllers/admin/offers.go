@@ -57,7 +57,7 @@ func OfferListing(c *gin.Context) {
 		})
 
 	}
-	c.JSON(200, gin.H{"code": 200, "status": "Success", "Offers": offer_list})
+	c.JSON(200, gin.H{"code": 200, "status": "Success", "data": gin.H{"Offers": offer_list}})
 }
 
 // @Summary Product Offer Deleting
