@@ -58,7 +58,7 @@ type Order struct {
 	PaymentMethod string `gorm:"not null"`
 	AddressID     uint   `gorm:"not null"`
 	Address       Address
-	CouponID      uint `gorm:"default:4"`
+	CouponID      uint `gorm:"default:3"`
 	Coupon        Coupon
 	Amount        float64
 	DliveryCharge int
